@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eae9e3">
+<title>AI 做的東西，為什麼都長一樣 — 三小時課程手札</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+ --paper:#eae9e3;--card:#f4f3ee;--ink:#202521;--muted:#5c645e;--line:#c3c8bf;
+ --green:#4f6453;--rust:#9a5531;--rust-tint:#efe1d6;--rust-soft:#e39a71;
+ --on-ink:#f4f3ee;--on-ink-muted:#a9b1aa;
+ --rice:#ebe8df;--tile:#dddcd3;
+ --header:56px;--nav:64px;
+ --mono:'DM Mono',ui-monospace,monospace;--sans:'Noto Sans TC',-apple-system,'PingFang TC',sans-serif;--display:'Archivo','Noto Sans TC',sans-serif;
+ --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%;scrollbar-color:var(--line) var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;caret-color:var(--rust)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+::selection{background:var(--rust);color:#fff}
+:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ico{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* header */
+.topline{height:4px;background:var(--ink)}
+header{position:sticky;top:0;z-index:40;height:var(--header);background:var(--paper);border-bottom:1px solid var(--ink)}
+.head{height:100%;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;flex:0 1 auto;min-width:0}.brand img{display:block;height:min(19px,calc((100vw - 183px)*.0942));width:auto}.when{white-space:nowrap}
+.head .when{display:none;font-size:12px;color:var(--muted)}
+/* journey switch (日光 ⇄ 箱根) */
+.journey{flex:none;margin-left:auto;display:flex;align-items:center;padding:3px;border-radius:17px;background:var(--ink)}
+.journey>*{position:relative;display:grid;place-items:center;width:43px;height:28px;border-radius:14px;color:#8f978f;transition:background .15s,color .15s}
+.journey>*:before{content:"";position:absolute;inset:-8px -1.5px}
+.journey svg{width:18px;height:18px;flex:none}
+.journey .on{background:var(--rice);color:var(--ink)}
+@media(hover:hover){.journey a:hover{color:var(--rice)}}
+.journey a:focus-visible{outline:2px solid var(--rust-soft);outline-offset:3px}
+.topnav{display:none}
+
+/* pages */
+.page{display:none;padding:24px 0 calc(var(--nav) + 40px + env(safe-area-inset-bottom))}
+.page.active{display:block;animation:enter .25s var(--ease)}
+@keyframes enter{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
+h1,h2,h3{margin:0;letter-spacing:-.02em;text-wrap:balance}
+.pagehead{margin:0 0 22px}
+.pagehead h1{font-size:30px;line-height:1.25;font-weight:900}
+.pagehead p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.dot{color:var(--rust)}
+
+/* cover photo */
+.cover{position:relative;margin:-24px -18px 0;height:min(76svh,620px);overflow:hidden;background:#3a3f36}
+.cover-img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;display:block}
+.cover:after{content:'';position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(to top,rgba(18,22,19,.72),rgba(18,22,19,0));pointer-events:none}
+.cover-txt{position:absolute;left:18px;right:18px;bottom:22px;z-index:1;color:#fff}
+.cover-txt h1{font-size:52px;line-height:1.08;font-weight:900;letter-spacing:.02em}
+.cover-txt p{margin:10px 0 0;font-size:14px;color:rgba(255,255,255,.86)}
+
+/* lead (status) */
+.lead{padding:26px 0 4px}
+.lead h2{font-size:26px;line-height:1.4;font-weight:900}
+.lead h2 .num{font-size:40px;font-weight:500;color:var(--rust);letter-spacing:-.04em}
+.lead p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.lead .state{font-size:13px;font-weight:700;color:var(--rust);margin-bottom:4px}
+.lead .btnrow{margin-top:16px}
+.meter{height:4px;background:var(--line);margin:14px 0 6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--green);transition:width .25s var(--ease)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px;border:1px solid var(--ink);background:transparent;font-size:15px;font-weight:700;transition:background .15s,color .15s,border-color .15s}
+.btn:active{transform:translateY(1px)}
+.btn.dark{background:var(--ink);color:var(--on-ink)}
+.btn.accent{background:var(--rust);border-color:var(--rust);color:#fff}
+.btn.ghost{border-color:var(--line);background:transparent}
+.btn.danger{color:#8e3f22;border-color:#c99a85}
+.btn.block{width:100%}
+@media(hover:hover){.btn.dark:hover{background:#3a423c}.btn.accent:hover{background:#7f4426}.btn.ghost:hover{border-color:var(--ink)}}
+.btnrow{display:flex;gap:8px}.btnrow .btn{flex:1}
+
+/* sections */
+.section{margin-top:36px}
+.section > h2{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em;padding-bottom:8px;border-bottom:1px solid var(--ink);display:flex;align-items:baseline;gap:8px}
+.count{color:var(--rust)}
+.more{display:flex;align-items:center;gap:6px;background:none;border:0;padding:14px 0;font-size:14px;font-weight:700}
+.dmeta{font-size:12px;font-weight:700;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:var(--on-ink);background:var(--ink);padding:0 6px;margin-left:6px;vertical-align:1px}
+.tag.now{background:var(--rust);color:#fff;margin:0 0 6px}
+
+.dayrow{display:grid;grid-template-columns:76px 1fr 18px;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.thumb{width:76px;height:96px;object-fit:cover;display:block;background:var(--line)}
+.dayrow h3{font-size:18px;line-height:1.4;margin:2px 0}
+.dayrow p{margin:0;font-size:13px;color:var(--muted)}
+.dayrow .ico{color:var(--muted)}
+@media(hover:hover){.dayrow:hover h3{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}}
+
+.hotel h3{font-size:18px;line-height:1.4;margin-top:14px}
+.hotel p{margin:2px 0 14px;font-size:13px;color:var(--muted)}
+
+/* route */
+.tabs{position:sticky;top:var(--header);z-index:20;background:var(--paper);margin:-24px -18px 0;padding:10px 18px;border-bottom:1px solid var(--line)}
+.tab{position:relative;z-index:1;min-height:48px;background:none;border:0;border-radius:999px;padding:6px 4px;text-align:center;color:var(--muted);transition:color .3s}
+.tab b{display:block;font-size:17px;line-height:1.2;font-weight:500}
+.tab span{font-size:11px;font-weight:500}
+.tab.active{color:var(--ink)}.tab.active span{font-weight:700}
+.dayhero{position:relative;margin:0 -18px;height:240px;overflow:hidden;background:#3a3f36}
+.dayhero-img{width:100%;height:100%;object-fit:cover;object-position:50% 45%;display:block}
+.dayhero:after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(18,22,19,.7),rgba(18,22,19,0) 65%)}
+.dayhero-txt{position:absolute;left:18px;right:18px;bottom:16px;z-index:1;color:#fff}
+.dayhero-txt .dmeta{color:rgba(255,255,255,.85)}
+.dayhero-txt h2{font-size:26px;line-height:1.35;font-weight:900;margin-top:2px}
+.daydesc{margin:16px 0 0;color:var(--muted);font-size:14px}
+.dayprog{font-size:12px;color:var(--muted)}
+
+.rmap{margin:14px 0 4px}
+.rmap svg{display:block;width:100%;max-width:420px;height:auto;margin:0 auto;font-family:var(--sans)}
+.rmap .mdate{font-family:var(--mono);font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
+.rmap figcaption{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:6px}
+.mchips{display:flex;gap:6px}
+.mchip{font:500 13px var(--mono);font-variant-numeric:tabular-nums;min-height:36px;padding:0 12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.mchip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+@media(hover:hover){.mchip:hover{border-color:var(--ink)}}
+.rmap .rnote{margin-left:auto;font-size:11px;color:var(--muted)}
+.timeline{margin:18px 0 0;list-style:none;padding:0;border-top:1px solid var(--ink)}
+.leg{display:flex;align-items:center;gap:10px;padding:10px 0 10px 18px;font-size:13px;color:var(--muted);border-bottom:1px dashed var(--line)}
+.leg b{color:var(--ink);font-weight:700}
+.stop{display:grid;grid-template-columns:54px 1fr;gap:12px;padding:16px 0 18px;border-bottom:1px solid var(--line)}
+.stime{padding-top:2px}
+.stime b{display:block;font-size:17px;line-height:1.2;font-weight:500}
+.stime span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.sbody{transition:opacity .2s}
+.stop.done .sbody,.stop.done .stime{opacity:.5}
+.stop.done h3{text-decoration:line-through;text-decoration-thickness:1px}
+.stop.now .stime b{color:var(--rust)}
+.sbody h3{font-size:18px;line-height:1.45;margin-bottom:6px}
+.detail{margin:8px 0 0;font-size:14px;line-height:1.8;color:#4d554f;overflow-wrap:anywhere;cursor:pointer}
+.detail.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.alert{margin-top:4px;background:#e2e0d6;padding:9px 11px;font-size:13px;line-height:1.75;display:flex;gap:8px;color:var(--ink)}
+.alert .ico{margin-top:3px;width:16px;height:16px}
+.sact{display:flex;gap:8px;margin-top:12px}
+.sact .btn{min-height:44px;font-size:14px}
+.sact .go{flex:1}
+.sact .chk{width:100px;flex:none}
+.chk[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
+.endnote{margin-top:16px}
+
+/* checklist */
+.checkrow{display:flex;gap:14px;align-items:flex-start;padding:16px 2px;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px;line-height:1.65}
+.checkrow input{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:1.5px solid var(--ink);flex:none;margin:1px 0 0;background:var(--card);display:grid;place-items:center;cursor:pointer}
+.checkrow input:checked{background:var(--green);border-color:var(--green)}
+.checkrow input:checked:after{content:'';width:10px;height:6px;border:solid #fff;border-width:0 0 2px 2px;transform:translateY(-2px) rotate(-45deg)}
+.checkrow:has(input:checked) .txt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.help{font-size:13px;color:var(--muted);margin:10px 0 0}
+
+/* ledger */
+.total{font-size:44px;line-height:1.1;font-weight:500;letter-spacing:-.05em;margin:0 0 10px}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.cat{font-size:12px;border:1px solid var(--line);padding:3px 8px;background:var(--card)}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 6px;margin:0 -6px;border:0;border-bottom:1px solid var(--line);font-size:15px;width:calc(100% + 12px);background:none;text-align:left}
+@media(hover:hover){.row:hover{background:var(--card)}}
+.row .l{flex:1}
+.row small{display:block;font-size:12px;color:var(--muted)}
+.note{background:var(--card);border:1px solid var(--line);padding:14px;margin-top:10px;white-space:pre-wrap;font-size:15px;line-height:1.85;text-align:left;width:100%;display:block}
+@media(hover:hover){.note:hover{border-color:var(--ink)}}
+.note small{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+.empty{padding:18px 0;color:var(--muted);font-size:14px}
+.stack{display:grid;gap:8px;margin-top:14px}
+
+/* inline form */
+.form{border:1px solid var(--ink);background:var(--card);padding:16px;margin:0 0 8px}
+.form[hidden]{display:none}
+.form h3{font-size:16px;margin-bottom:12px}
+.fl{display:block;font-size:13px;font-weight:700;margin-bottom:12px}
+.field{display:block;width:100%;background:#fff;border:1px solid var(--line);padding:11px 12px;border-radius:0;font-size:16px;font-weight:400;outline:0;margin-top:6px}
+.field:focus{border-color:var(--rust);box-shadow:0 0 0 3px var(--rust-tint)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* bottom nav */
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:calc(var(--nav) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--paper);border-top:1px solid var(--ink);display:grid;grid-template-columns:repeat(4,1fr)}
+body:not([data-phase=pre]) .bnav{grid-template-columns:repeat(3,1fr)}
+body:not([data-phase=pre]) [data-page=check]{display:none}
+.bnav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;color:var(--muted)}
+.bnav .ico{width:26px;height:26px;stroke-width:2.1}
+.bnav button{font-size:12px}
+.bnav button.active{color:var(--rust)}
+
+footer{border-top:1px solid var(--ink);padding:22px 0 calc(var(--nav) + 30px + env(safe-area-inset-bottom))}
+footer .lockup{display:block;width:100%;max-width:466px;height:auto;margin-left:-14px}
+
+.toast{position:fixed;left:16px;right:16px;bottom:calc(var(--nav) + 14px + env(safe-area-inset-bottom));z-index:120;background:var(--ink);color:#fff;padding:12px 16px;font-size:14px;box-shadow:0 8px 24px rgba(20,25,21,.25);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease);max-width:420px;margin:0 auto}
+.toast.show{opacity:1;transform:none}
+
+@media(min-width:860px){
+ :root{--header:64px}
+ .wrap{padding:0 28px}
+ header .wrap{max-width:1040px}
+ .brand{flex:none}.brand img{height:22px}
+ .topnav{display:flex;margin-left:auto;height:100%}
+ .journey{margin-left:20px}
+ .topnav button{background:none;border:0;padding:0 16px;font-size:14px;font-weight:700;color:var(--muted);position:relative}
+ .topnav button:hover,.topnav button.active{color:var(--ink)}
+ .topnav button.active:after{content:'';position:absolute;left:16px;right:16px;bottom:-1px;height:3px;background:var(--rust)}
+ .bnav{display:none}
+ .page{padding-bottom:64px}
+ footer{padding-bottom:36px}
+ .tabs{margin:-24px -28px 0;padding:10px 28px}
+ .cover{margin:-24px -28px 0;height:560px}
+ .cover-txt{left:28px;bottom:28px}.cover-txt h1{font-size:72px}
+ .dayhero{margin:0 -28px;height:320px}.dayhero-txt{left:28px}
+ .stop{grid-template-columns:72px 1fr;gap:16px}
+ .leg{padding-left:24px}
+ .toast{bottom:24px}
+}
+@media(min-width:1100px){.head .when{display:inline;margin-left:16px}}
+/* soft bento layer — structure from soft-bento-ui, colours from this site */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{display:flex;background:var(--tile);border-radius:24px;padding:8px}
+.tile.tall{grid-row:span 2}
+.inner{flex:1;width:100%;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding:14px 16px;border:0;border-radius:16px;background:var(--card);color:var(--ink);text-align:left;font:inherit;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 20px rgba(0,0,0,.05)}
+button.inner{cursor:pointer;transition:opacity .15s,transform .15s}
+button.inner:active{opacity:.72;transform:scale(.98)}
+.inner.inv{background:var(--ink);color:var(--on-ink)}
+.b-lbl{font-size:13px;font-weight:700;color:var(--muted)}
+.inv .b-lbl,.inv .b-sub{color:var(--on-ink-muted)}
+.b-num{font:700 48px/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.b-num small{margin-left:6px;font:700 14px var(--sans);letter-spacing:0}
+.b-sub{font:500 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.ringrow{display:flex;align-items:center;gap:10px}
+.ring{width:44px;height:44px;flex:none;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:5}
+.ring .trk{stroke:var(--line)}
+.ring .val{stroke:var(--rust);stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1)}
+.b-frac{font:700 22px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.b-frac span{font:700 13px var(--sans);color:var(--muted)}
+.b-roll{display:inline-block;animation:b-roll .45s cubic-bezier(.22,1,.36,1)}
+@keyframes b-roll{from{opacity:0;transform:translateY(45%)}}
+/* date tabs as a sliding segmented control */
+.seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:5px;border-radius:999px;background:var(--tile)}
+.seg-thumb{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/3);border-radius:999px;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);transition:transform .45s cubic-bezier(.22,1,.36,1)}
+@media(min-width:860px){.bento{grid-template-columns:repeat(3,1fr)}.tile.tall{grid-row:auto}}
+@media(prefers-reduced-motion:reduce){.ring .val,.seg-thumb,button.inner{transition:none}.b-roll{animation:none}button.inner:active{transform:none}}
+@media(prefers-reduced-motion:reduce){.page.active{animation:none}.toast,.meter i,.btn{transition:opacity .15s}}
+@media print{header,.bnav,.sact,.btn,.tabs{display:none!important}.page{display:block!important}}
+/* trip cover (hero) */
+.trip-cover{isolation:isolate;position:relative;display:flex;align-items:flex-end;background:var(--ink) url("img/cover.jpg") 55% 44%/cover no-repeat;color:var(--on-ink);min-height:clamp(380px,64svh,560px);margin:-24px -18px 0;padding:0 18px 26px}
+.trip-cover:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(32,37,33,.96) 0%,rgba(32,37,33,.55) 38%,rgba(32,37,33,0) 70%)}
+.trip-cover .kicker{display:flex;gap:10px;align-items:center;margin:0 0 14px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--on-ink-muted)}
+.trip-cover .kicker:after{content:"";flex:1;height:1px;background:rgba(244,243,238,.35)}
+.trip-cover h1{margin:0;line-height:0}.trip-cover h1 img{display:block;height:clamp(24px,8.2vw,49.5px);width:auto}
+.trip-cover .sub{margin:12px 0 0;font-size:15px;font-weight:700;letter-spacing:.08em}.trip-cover .sub .dot{color:var(--rust-soft)}
+.trip-cover button,.trip-grid>div>button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.trip-cover button{margin-top:18px;min-height:44px;padding:0 18px;border:1px solid rgba(244,243,238,.6);font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;transition:background .2s var(--ease),color .2s var(--ease)}
+.trip-cover button:hover,.trip-cover button:focus-visible{background:var(--on-ink);color:var(--ink)}
+.trip-index{background:var(--ink);color:var(--on-ink);margin:0 -18px 28px;padding:8px 18px 26px}
+.trip-index>h2{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--on-ink-muted);padding-bottom:8px;border-bottom:1px solid var(--on-ink);margin:0 0 16px}
+.trip-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.trip-grid img{width:100%;height:100%;min-height:140px;object-fit:cover;display:block}
+.trip-grid>div>button{display:flex;align-items:baseline;gap:12px;width:100%;min-height:48px;padding:10px 0;text-align:left;border-bottom:1px solid rgba(244,243,238,.22);font-weight:700}
+.trip-grid>div>button:hover,.trip-grid>div>button:focus-visible{color:var(--rust-soft)}
+.trip-index time{font-family:var(--mono);font-weight:400;font-size:13px;color:var(--rust-soft)}
+.trip-index,.tabs{scroll-margin-top:calc(var(--header) + 8px)}
+.trip-side{margin-top:8px}
+.trip-index .lead{padding:14px 0 0}.trip-index .lead h2{font-size:18px;line-height:1.35;color:var(--on-ink)}.trip-index .lead h2 .num{font-size:34px;color:var(--rust-soft)}.trip-index .lead p{font-size:12.5px;color:var(--on-ink-muted);line-height:1.6}.trip-index .lead .state{color:var(--rust-soft)}.trip-index .lead .btnrow{flex-direction:column}
+.trip-index .btn.ghost{border-color:rgba(244,243,238,.45);color:var(--on-ink)}
+.trip-below .section{margin-top:26px}.trip-below .section>h2{color:var(--on-ink-muted);border-color:var(--on-ink)}.trip-below .count{color:var(--rust-soft)}
+.trip-below .checkrow{border-color:rgba(244,243,238,.22)}.trip-below .checkrow input{border-color:var(--on-ink);background:transparent}.trip-below .checkrow input:checked{background:var(--rust-soft);border-color:var(--rust-soft)}.trip-below .checkrow:has(input:checked) .txt,.trip-below .empty{color:var(--on-ink-muted)}
+.trip-below .more{color:var(--on-ink);padding-bottom:0}.trip-below .more:hover{color:var(--rust-soft)}
+@media(min-width:860px){.trip-index .lead h2{font-size:22px}.trip-cover,.trip-index{margin-left:-28px;margin-right:-28px;padding-left:32px;padding-right:32px}.trip-cover{padding-bottom:36px}.trip-index{padding-bottom:34px}.trip-grid{gap:28px;align-items:start}.trip-grid img{height:auto;min-height:0;aspect-ratio:4/3}}
+
+/* ---- 這份課程手札自己加的 ---- */
+.place{display:inline-flex;align-items:center;gap:6px;flex:none;margin-left:auto;height:28px;padding:0 12px 0 9px;border-radius:14px;background:var(--ink);color:var(--rice);font-size:12px;font-weight:700;white-space:nowrap}
+.place .ico{width:18px;height:18px;stroke-width:1.6}
+@media(min-width:860px){.place{order:3;margin-left:20px}}
+.brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
+.trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
+.trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
+.media{margin:12px 0 0}
+.media img,.media video{display:block;width:100%;height:auto;background:var(--tile)}
+.media.shot img{border:1px solid var(--line)}
+.media figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pair figure{margin:0}
+.vid{max-width:300px}
+.prompt{position:relative;margin-top:12px;background:var(--card);border:1px solid var(--line);padding:14px 14px 12px}
+.prompt p{margin:0;font-size:15px;line-height:1.85;white-space:pre-wrap}
+.prompt .pl{font:500 11px var(--mono);letter-spacing:.08em;color:var(--rust);margin-bottom:6px}
+.copy{display:inline-flex;align-items:center;gap:6px;margin-top:10px;min-height:40px;padding:0 12px;border:1px solid var(--ink);background:transparent;font-size:13px;font-weight:700}
+@media(hover:hover){.copy:hover{background:var(--ink);color:var(--on-ink)}}
+.act{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--green);padding:0 6px;margin-right:6px;vertical-align:2px}
+.act.demo{background:var(--ink)}
+.act.brk{background:var(--muted)}
+.tip{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:18px 0;border-bottom:1px solid var(--line)}
+.tip .num{font-size:22px;color:var(--rust);line-height:1.2}
+.tip h3{font-size:18px;line-height:1.4;margin-bottom:8px}
+.tip dl{margin:0;display:grid;gap:8px}
+.tip dt{font-size:12px;font-weight:700;color:var(--muted)}
+.tip dd{margin:0;font-size:14px;line-height:1.8;color:#3f4741}
+.tip dd.us{background:var(--rust-tint);padding:8px 10px;color:var(--ink)}
+.hourrow{display:grid;grid-template-columns:76px 1fr 18px;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.hourrow .thumb{width:76px;height:96px}
+.hourrow h3{font-size:18px;line-height:1.4;margin:2px 0}
+.hourrow p{margin:0;font-size:13px;color:var(--muted)}
+@media(hover:hover){.hourrow:hover h3{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}}
+.seg button{position:relative;z-index:1;min-height:48px;background:none;border:0;border-radius:999px;color:var(--muted);font-size:14px;font-weight:700}
+.seg button span{display:block;font:500 11px var(--mono);font-variant-numeric:tabular-nums}
+.seg button[aria-selected=true]{color:var(--ink)}
+.stop{cursor:default}
+.stop .chk{display:inline-flex;align-items:center;gap:6px;margin-top:12px;min-height:40px;padding:0 12px;border:1px solid var(--line);background:transparent;font-size:13px;font-weight:700;color:var(--muted)}
+.stop.done .chk{border-color:var(--green);color:var(--green)}
+.src{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.8}
+.src a{text-decoration:underline;text-underline-offset:3px}
+.clock{font:500 40px/1 var(--mono);letter-spacing:-.04em;color:var(--rust);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body data-phase="pre">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+ <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12"/><path d="M16 8V4H4v12h4"/></symbol>
+ <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+ <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></symbol>
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+ <symbol id="i-list" viewBox="0 0 24 24"><path d="m2.7 7.1 2 2.1 3.6-4.1M11.5 7.2H21m-18.3 9 2 2.1 3.6-4.1m3.2 2.1H21"/></symbol>
+ <symbol id="i-yuguang" viewBox="0 0 24 24"><path d="M6.5 12.5a5.5 5.5 0 0 1 11 0"/><path d="M2 12.5h20"/><path d="M3 16q2.25-1.2 4.5 0t4.5 0 4.5 0 4.5 0M5 19.5q1.75-1 3.5 0t3.5 0 3.5 0 3.5 0"/><path d="M19 12.5V6.8l2.6 1.1L19 9"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+</svg>
+<div class="topline"></div>
+<header><div class="wrap head">
+ <a class="brand" href="#home" data-go="home"><span class="brandtxt">AI 為什麼都長一樣<span class="dot">.</span></span></a>
+ <span class="place" title="拍攝地：台南 漁光島"><svg class="ico" aria-hidden="true"><use href="#i-yuguang"/></svg>漁光島</span>
+ <span class="when num">3 HOURS</span>
+ <nav class="topnav" aria-label="主選單">
+  <button data-page="home">首頁</button><button data-page="route">課程</button><button data-page="tips">十招</button><button data-page="prompts">提示詞</button>
+ </nav>
+</div></header>
+<main class="wrap">
+ <section class="page" id="page-home" aria-label="首頁"></section>
+ <section class="page" id="page-route" aria-label="課程"></section>
+ <section class="page" id="page-tips" aria-label="十招"></section>
+ <section class="page" id="page-prompts" aria-label="提示詞"></section>
+</main>
+<footer><div class="wrap"><p class="src" style="margin:0">照片與影片：2026 年 3 月 25 日傍晚，台南漁光島。</p></div></footer>
+<nav class="bnav" aria-label="手機導覽">
+ <button data-page="home"><svg class="ico"><use href="#i-home"/></svg>首頁</button>
+ <button data-page="route"><svg class="ico"><use href="#i-clock"/></svg>課程</button>
+ <button data-page="tips"><svg class="ico"><use href="#i-list"/></svg>十招</button>
+ <button data-page="prompts"><svg class="ico"><use href="#i-chat"/></svg>提示詞</button>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const KEY='ai-same-class-v1';
+const I=(id,cls='ico')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* 提示詞：學生可以直接複製 */
+const PROMPTS={
+p1:{label:'實驗一 · 什麼都不給',when:'0:20',text:'幫我設計一張「漁光島海邊咖啡店」的開幕海報。'},
+p2:{label:'實驗二 · 給參考、要十個方向',when:'0:35',text:'幫我設計一張「漁光島海邊咖啡店」的開幕海報。\n我附上三張我喜歡的照片，請參考它們的顏色和感覺。\n先不要只給一張，給我 10 個方向，每個方向的字體、配色、版面都要不一樣，每個用一句話說明。'},
+p3:{label:'開工前先問我',when:'1:00',text:'我要做一份【　　】，給【　　】看。\n動手之前，先把你想確認的事情問我，一次問完，我回答之後你再開始。'},
+p4:{label:'點出它的老習慣',when:'1:25',text:'在你開始設計之前，先回答我三個問題：\n1. 你做這類東西最常失敗的方式是什麼？\n2. 你習慣用的幾種固定風格是什麼？\n3. 你最常用的五種字體和三種顏色是什麼？\n列出來之後，這次全部避開。'},
+p5:{label:'換你 · 海邊素材剪法',when:'2:10',text:'我有四段在台南漁光島拍的海邊影片：夕陽、一個人在拍照、剪影、兩個人走過沙灘。我要剪一支 15 秒的直式 Reels。\n先不要給答案，問我三個問題。\n問完之後給我 10 個不一樣的剪法方向，每個一句話，寫清楚用到哪幾段。'},
+p6:{label:'挑好方向之後',when:'2:20',text:'我選第【　】個的開場，配第【　】個的結尾。\n幫我寫成一張剪輯表：第幾秒放哪一段、在哪裡換畫面、哪裡要加音效。每一行一個時間點。'}
+};
+const promptBox=id=>{const p=PROMPTS[id];return `<div class="prompt"><div class="pl">${esc(p.label)}</div><p>${esc(p.text)}</p><button class="copy" type="button" data-copy="${id}">${I('copy')}複製這段</button></div>`};
+
+const HOURS=[
+{id:'h1',n:'第一小時',range:'0:00 – 1:00',name:'AI 做的東西，為什麼都長一樣',img:'img/h1.jpg',desc:'先看結果，再讓每個人親手做一次「AI 第一稿」，找出它們的共同點。'},
+{id:'h2',n:'第二小時',range:'1:00 – 2:05',name:'怎麼跟 AI 講話',img:'edit/v7_3.60.jpg',desc:'老師在電腦上示範：從丟參考、要方向，到拿到一張剪輯表，再在剪輯軟體裡剪出來。'},
+{id:'h3',n:'第三小時',range:'2:05 – 3:00',name:'換你做，不用自己拍',img:'edit/v7_13.00.jpg',desc:'拿老師的四顆海邊素材，用 AI 規劃剪法，自己用手機剪 15 秒。'}
+];
+const STOPS={
+h1:[
+{id:'a1',time:'0:00 – 0:05',k:'看',name:'先看一支 19 秒的片',detail:'3 月 25 日傍晚在台南漁光島拍的。這支片和這份手札，都是老師跟 Claude 一起做的。素材是老師拍的，方向是老師定的；AI 負責分析、試很多版本、把話變成畫面。',media:'<figure class="media vid"><video src="edit/v7.mp4" poster="edit/v7_poster.jpg" controls playsinline preload="none"></video></figure>',alert:'看完寫一句：你覺得哪裡像 AI 做的，哪裡不像？'},
+{id:'a2',time:'0:05 – 0:15',k:'看',name:'老師的第一稿 vs 改完',detail:'同一堂課的簡報。第一稿是 AI 自己決定的：米白底、橘色、一排同樣大小的卡片、每張一個小圖示、標題上面一行英文小字。老闆看完只說一句：跟其他人做的一樣。改完的版本，顏色從海邊素材取、照片當版面、數字從影片檔讀出來。',media:'<div class="pair"><figure class="media shot"><img src="img/before.jpg" alt="第一稿：米白底和橘色卡片" loading="lazy"><figcaption>第一稿</figcaption></figure><figure class="media shot"><img src="img/after.jpg" alt="改完：深海色底和四張海邊照片" loading="lazy"><figcaption>改完</figcaption></figure></div>'},
+{id:'a3',time:'0:15 – 0:20',k:'看',name:'為什麼會長一樣',detail:'你沒給它任何東西的時候，AI 只能選最保險的答案。它每次都從零開始，不記得自己已經做過幾千次一樣的東西，所以每個人拿到的第一稿都很像。今天十個方法，都是在解決這件事。'},
+{id:'a4',time:'0:20 – 0:35',k:'做',name:'實驗一：什麼都不給，叫 AI 做海報',detail:'每個人用手機上的 ChatGPT、Claude 或 Gemini，貼同一句話。做好截圖丟到班群。全班一起找：哪些地方大家的都一樣？',prompt:'p1',alert:'AI 每次都以為這套風格是自己第一次想到的，因為它不記得自己做過幾千次。'},
+{id:'a5',time:'0:35 – 0:50',k:'做',name:'實驗二：給參考，要十個方向',detail:'第一招和第二招一起用。同一題再做一次，這次附上三張你手機裡喜歡的照片，並且要它一次給 10 個方向。挑兩個你喜歡的，跟它說「第一個這裡好，第三個那裡好」，再要五版。',prompt:'p2',alert:'原則只有一句：你放進去什麼，就拿回什麼。'},
+{id:'a6',time:'0:50 – 1:00',k:'休',name:'休息',detail:'把實驗一和實驗二的截圖並排，下課前給隔壁同學看。'}
+],
+h2:[
+{id:'b1',time:'1:00 – 1:10',k:'示範',name:'第六招：開工前請它先問',detail:'老師做這門課，對 AI 講的第一句話就是「動手之前，先把你想確認的事情問我」。它問了：學生有沒有電腦、手機是哪種、可以去哪裡拍。這幾個答案決定了整堂課。被問，比自己想該交代什麼容易得多。',prompt:'p3'},
+{id:'b2',time:'1:10 – 1:15',k:'示範',name:'第五招：用手機筆記、用語音講',detail:'想法不用打得很完整。在路上用手機備忘錄記下來，或直接用語音講，講得亂也沒關係。老師這門課大部分是用語音輸入講的，錯字照送。'},
+{id:'b3',time:'1:15 – 1:25',k:'示範',name:'第三招：讓它讀你已經有的東西',detail:'不要讓它憑空想，先讓它讀你手上已經有的東西。我們這次讓它讀 Blackmagic Camera 寫在影片檔裡的資訊：夕陽和剪影只差 29 秒，白平衡卻差了 1000K。這個數字是從檔案讀出來的，不是它編的。',media:'<figure class="media"><img src="img/tn_sun.jpg" alt="夕陽，白平衡 4870K" loading="lazy" style="max-width:240px"><figcaption>夕陽 18:07:07 · 4870K</figcaption></figure>'},
+{id:'b4',time:'1:25 – 1:35',k:'示範',name:'第七招：點出它的老習慣',detail:'AI 不知道自己有偏好，所以要你幫它點出來。老師的做法是直接問它，讓它自己列出來，再叫它避開。',prompt:'p4'},
+{id:'b5',time:'1:35 – 1:55',k:'示範',name:'老師在電腦上做一次：海邊片',detail:'一、丟參考：三支存著的 Reels 加四顆海邊素材。二、要十個剪法方向。三、挑兩個混。四、要一張剪輯表：幾秒換哪一格、哪裡下快門聲。五、照著表，在剪輯軟體裡剪。',media:'<figure class="media"><img src="edit/v7_5.60.jpg" alt="海邊九格畫面" loading="lazy"></figure>',alert:'最後一步是人做的。AI 給的是剪法和時間表，手感要自己練。'},
+{id:'b6',time:'1:55 – 2:05',k:'休',name:'休息',detail:'把老師的四顆海邊素材存到手機裡。'}
+],
+h3:[
+{id:'c1',time:'2:05 – 2:10',k:'看',name:'第九招：留時間給人看懂',detail:'AI 可以同時讀很多東西，人不行，人一次只能看一個地方。字出來之後，要留夠時間讓人讀完，再換下一個重點。老師的海邊片裡，換格都擠在段落交界，段落中間讓畫面自己走，最後 7.5 秒一刀都不剪。',media:'<figure class="media"><img src="edit/v7_13.00.jpg" alt="最後的長鏡頭：兩個人走過海邊" loading="lazy"></figure>'},
+{id:'c2',time:'2:10 – 2:45',k:'做',name:'換你：四顆素材，剪 15 秒',detail:'不用自己拍。用老師的四顆素材，先把第一段話貼給 AI，回答它的三個問題，從十個方向裡挑兩個混，再要一張剪輯表。照著表，用手機剪。',prompt:'p5',alert:'音樂用剪輯 App 內建的。老師片裡的配樂是付費音樂庫的，不能轉給大家。'},
+{id:'c2b',time:'2:20',k:'做',name:'挑好方向之後',detail:'把你挑的兩個方向告訴它，要一張剪輯表。',prompt:'p6'},
+{id:'c3',time:'2:45 – 2:52',k:'看',name:'互相看',detail:'每組放一支。大家說兩件事：哪裡像 AI 給的，哪裡看得出是你自己決定的。'},
+{id:'c4',time:'2:52 – 2:57',k:'看',name:'第四、八、十招，和什麼時候開新對話',detail:'大東西先試風格：先做三頁，不要整份做完才發現不對（老師第一版就是整份重做）。做成會動的東西：這份手札本身就是一個網頁。寫成 Skill 再出題測：把今天的剪法寫成一份說明，下次換新素材給 AI 照做。一次性的小事開短對話，一個專案用一條長對話。'},
+{id:'c5',time:'2:57 – 3:00',k:'看',name:'AI 會有品味嗎',detail:'AI 會越來越會做「好看」的東西，好看會越來越便宜。你自己拍的畫面、你自己犯過的錯，是 AI 生不出來的部分。',alert:'作業：用今天的流程，剪一支 15 秒，下週上課放。'}
+]};
+const TIPS=[
+['先給參考','做新東西之前，先丟截圖、喜歡的作品、你自己以前做過的東西給它當參考。','給了手機裡存的三支 Reels、之前的那須旅行簡報，還有四顆海邊素材本身。'],
+['一次要十個方向','一次要十個字體、顏色、版面都不同的方向，挑出喜歡的部分，再沿著它們要五版。','只要了三個版本，太少，挑到的還是它的老習慣。下次直接要十個。'],
+['讓它讀你已經有的東西','改舊東西時，先讓它讀你現有的檔案，照原樣重建出來，再從那裡改。','讓它讀 Blackmagic Camera 寫在影片檔裡的白平衡和快門，數字不用它編。'],
+['大東西先試風格','先做幾頁試風格，確認給誰看、在哪裡用，再做整份。','反例：第一版整份做完才發現像 AI 做的，整份重做。'],
+['用手機筆記和語音交代','想到就記，用手機備忘錄或語音講，講亂也沒關係。','大部分用語音輸入講，錯字照送；只要求它回覆一律用繁體。'],
+['開工前請它先問','叫它先問你問題。被問，比自己想該交代什麼容易。','第一句就說「動手之前先問我」，它問的問題決定了整堂課。'],
+['點出它的老習慣','直接告訴它，你知道它愛用哪些字體和顏色，叫它避開。','直接問它會怎麼失敗、固定風格是什麼、最愛哪五種字體，再叫它避開。'],
+['做成會動的東西','能做成網頁就不要做成死的檔案，資料改了，畫面會跟著變。','簡報做成網頁：倒數計時、LUT 當場切換試色、影片直接播。'],
+['留時間給人看懂','人一次只能看一個地方。字出來要留時間讀完，再換下一個重點。','換格擠在段落交界，最後 7.5 秒一刀都不剪。'],
+['寫成 Skill，再出題測','做順了就把做法寫成一份說明，換一個新題目給它照做，看結果對不對。','把規則寫成給另一個 AI 的說明檔；下一步把格子剪法寫成 Skill，用新素材測。']
+];
+
+/* state */
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.done)return s}catch(e){}return{done:{},start:null}}
+let state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2400)}
+const toMin=x=>{const[a,b]=x.split(':');return +a*60+ +b};
+const span=t=>{const m=t.match(/\d+:\d{2}/g)||[];const s=m[0]?toMin(m[0]):0;return{s,e:m[1]?toMin(m[1]):s+5}};
+const elapsed=()=>state.start?Math.floor((Date.now()-state.start)/60000):null;
+const fmt=m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`;
+const allStops=()=>HOURS.flatMap(h=>STOPS[h.id].map(s=>({...s,h:h.id})));
+function nowStop(){const e=elapsed();if(e==null)return null;return allStops().find(s=>{const t=span(s.time);return e>=t.s&&e<t.e})||null}
+
+/* pages */
+const kTag={'看':'<span class="act">看</span>','做':'<span class="act">動手</span>','示範':'<span class="act demo">老師示範</span>','休':'<span class="act brk">休息</span>'};
+function home(){
+ const e=elapsed(),n=nowStop();
+ const doneN=Object.keys(state.done).length,total=allStops().length;
+ return `<div class="trip-cover"><div style="width:100%">
+  <p class="kicker"><svg class="ico" aria-hidden="true" style="width:16px;height:16px"><use href="#i-yuguang"/></svg>台南 漁光島 · 3 HOURS</p>
+  <h1>AI 做的東西，<br>為什麼都長一樣</h1>
+  <p class="sub">用老師的海邊片，學十個跟 AI 合作的方法<span class="dot">.</span></p>
+  <button type="button" data-go="route">${I('right')}看今天的課表</button>
+ </div></div>
+ <div class="lead">
+  ${e==null?`<div class="state">還沒開始上課</div><h2>三小時，<span class="num">3</span> 段</h2><p>老師按下開始後，這裡會顯示現在進行到哪裡。</p>`
+  :`<div class="state">已經上了</div><h2><span class="clock">${fmt(Math.min(e,999))}</span></h2><p>${n?`現在：${esc(n.name)}`:(e>=180?'課程結束':'—')}</p>`}
+  <div class="meter"><i style="width:${Math.round(doneN/total*100)}%"></i></div>
+  <p class="num" style="font-size:12px;margin:0">${doneN} / ${total} 段完成</p>
+  <div class="btnrow" style="display:flex"><button class="btn dark" type="button" id="startBtn">${state.start?'重新計時':'開始上課'}</button><button class="btn ghost" type="button" data-go="route">課表</button></div>
+ </div>
+ <div class="section"><h2>三小時</h2>
+  ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
+ </div>
+ <div class="section"><h2>今天要帶</h2>
+  <div class="detail" style="cursor:auto">手機（裝好 ChatGPT、Claude 或 Gemini 其中一個）、手機裡三張你喜歡的照片、一個剪輯 App（CapCut、剪映都可以）。</div>
+ </div>`;
+}
+let curHour=0;
+function route(){
+ const h=HOURS[curHour],n=nowStop();
+ return `<div class="tabs" style="display:block"><div class="seg" role="tablist">
+  <span class="seg-thumb" style="transform:translateX(${curHour*100}%)"></span>
+  ${HOURS.map((x,i)=>`<button type="button" role="tab" aria-selected="${i===curHour}" data-hour="${i}">${x.n}<span>${x.range}</span></button>`).join('')}
+ </div></div>
+ <div class="dayhero" style="margin-top:24px"><img class="dayhero-img" src="${h.img}" alt=""><div class="dayhero-txt"><div class="dmeta num">${h.range}</div><h2>${esc(h.name)}</h2></div></div>
+ <p class="daydesc">${esc(h.desc)}</p>
+ <ol class="timeline">
+ ${STOPS[h.id].map(s=>{const t=span(s.time),done=state.done[s.id],now=n&&n.id===s.id;return `<li class="stop${done?' done':''}${now?' now':''}">
+  <div class="stime"><b class="num">${s.time.split(' – ')[0]}</b><span class="num">${s.time.includes('–')?'– '+s.time.split(' – ')[1]:''}</span></div>
+  <div class="sbody">${now?'<span class="tag now">現在</span><br>':''}<h3>${kTag[s.k]||''}${esc(s.name)}</h3>
+   <p class="detail" style="cursor:auto">${esc(s.detail)}</p>
+   ${s.media||''}${s.prompt?promptBox(s.prompt):''}
+   ${s.alert?`<div class="alert">${I('warn')}<span>${esc(s.alert)}</span></div>`:''}
+   <button class="chk" type="button" data-done="${s.id}" aria-pressed="${!!done}">${I('check')}${done?'完成了':'標記完成'}</button>
+  </div></li>`}).join('')}
+ </ol>`;
+}
+function tips(){
+ return `<div class="pagehead"><h1>跟 AI 合作的十個方法<span class="dot">.</span></h1><p>每個方法怎麼做，下面是我們這門課真的怎麼做。</p></div>
+ ${TIPS.map((t,i)=>`<div class="tip"><span class="num">${String(i+1).padStart(2,'0')}</span><div><h3>${esc(t[0])}</h3><dl><dt>怎麼做</dt><dd>${esc(t[1])}</dd><dt>我們這次</dt><dd class="us">${esc(t[2])}</dd></dl></div></div>`).join('')}`;
+}
+function prompts(){
+ return `<div class="pagehead"><h1>提示詞<span class="dot">.</span></h1><p>上課會用到的每一段話，按一下就複製。【　】裡換成你自己的。</p></div>
+ ${Object.keys(PROMPTS).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}`;
+}
+const PAGES={home,route,tips,prompts};
+let page='home';
+function render(){
+ for(const k in PAGES){const el=document.getElementById('page-'+k);el.classList.toggle('active',k===page);if(k===page)el.innerHTML=PAGES[k]()}
+ document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+}
+function go(p){page=p;try{history.replaceState(null,'','#'+p)}catch(e){}render();window.scrollTo(0,0)}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button,a');if(!t)return;
+ if(t.dataset.page){go(t.dataset.page);return}
+ if(t.dataset.go){e.preventDefault();go(t.dataset.go);return}
+ if(t.dataset.hour!=null){curHour=+t.dataset.hour;if(page!=='route')go('route');else{render()}return}
+ if(t.dataset.done){const id=t.dataset.done;if(state.done[id])delete state.done[id];else state.done[id]=true;save();render();return}
+ if(t.dataset.copy){const txt=PROMPTS[t.dataset.copy].text;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('複製好了，貼給 AI 吧')).catch(()=>toast('沒辦法自動複製，請長按文字選取'));return}
+ if(t.id==='startBtn'){state.start=Date.now();state.done={};save();toast('開始計時');render()}
+});
+setInterval(()=>{if(state.start&&(page==='home'||page==='route'))render()},30000);
+const h0=(location.hash||'').slice(1);if(PAGES[h0])page=h0;
+render();
+</script>
+</body>
+</html>
