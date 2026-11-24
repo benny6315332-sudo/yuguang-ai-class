@@ -342,6 +342,18 @@ button.inner:active{opacity:.72;transform:scale(.98)}
  .pgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:32px;align-items:start}
  .pagehead h1{font-size:44px}
  .pagehead{max-width:720px}
+ .dl{margin-top:56px}
+ .dl .section{margin-top:40px}
+ .dl .help{max-width:760px}
+ #clips .lutrows,#luts .lutrows{display:grid;gap:24px;margin-top:18px}
+ #clips .lutrows{grid-template-columns:repeat(4,minmax(0,1fr))}
+ #luts .lutrows{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .dl .lutrow{display:flex;flex-direction:column;gap:12px;padding:0;border:0}
+ .dl .lutrow img{width:100%;height:auto;aspect-ratio:3/2}
+ #clips .lutrow img{aspect-ratio:4/5}
+ .dl .lutrow>div{display:flex;flex-direction:column;flex:1}
+ .dl .lutrow .copy{align-self:flex-start;margin-top:auto;padding-top:0}
+ .dl .lutrow p{margin-bottom:10px}
 }
 .lutrow{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
 .lutrow img{width:120px;height:80px;object-fit:cover;display:block;background:var(--tile)}
@@ -465,8 +477,8 @@ const LUTS=[
 ];
 const lutSection=()=>`<div class="section" id="luts"><h2>LUT 下載</h2>
   <p class="help" style="margin-top:12px">三個 .cube 檔，Rec.709、33 點。在 Blackmagic Camera 的 Settings → LUTs 匯入，開啟 Record LUT to Clip。iPhone 拍 Apple Log 的話要先轉成 Rec.709 再套。</p>
-  ${LUTS.map(l=>`<div class="lutrow"><img src="lut/preview-${l.slug}.jpg" alt="套上${l.name}的漁光島" loading="lazy"><div><h3>${l.name} <span class="num">${l.en}</span></h3><p>${l.desc}</p><a class="copy" href="lut/${l.slug}.cube" download="${l.name}_${l.en.replace(/ /g,'')}_Rec709.cube">${I('down')}下載 .cube</a></div></div>`).join('')}
-  <div class="lutrow"><img src="lut/preview-original.jpg" alt="沒有套 LUT 的原圖" loading="lazy"><div><h3>原圖</h3><p>上面三張都是用這張漁光島套出來的。</p><a class="copy" href="lut/yuguang-luts.zip" download="漁光島_LUT_三款.zip">${I('down')}三款一起下載 .zip</a></div></div>
+  <div class="lutrows">${LUTS.map(l=>`<div class="lutrow"><img src="lut/preview-${l.slug}.jpg" alt="套上${l.name}的漁光島"><div><h3>${l.name} <span class="num">${l.en}</span></h3><p>${l.desc}</p><a class="copy" href="lut/${l.slug}.cube" download="${l.name}_${l.en.replace(/ /g,'')}_Rec709.cube">${I('down')}下載 .cube</a></div></div>`).join('')}
+  <div class="lutrow zip"><img src="lut/preview-original.jpg" alt="沒有套 LUT 的原圖"><div><h3>原圖</h3><p>上面三張都是用這張漁光島套出來的。</p><a class="copy" href="lut/yuguang-luts.zip" download="漁光島_LUT_三款.zip">${I('down')}三款一起下載 .zip</a></div></div></div>
  </div>`;
 const CLIPS=[
 {f:'01-sunset',name:'夕陽',meta:'18:07:07 · 6.7 秒 · 橫的',use:'開場、九格'},
@@ -476,7 +488,7 @@ const CLIPS=[
 ];
 const clipSection=()=>`<div class="section" id="clips"><h2>素材下載</h2>
   <p class="help" style="margin-top:12px">3 月 25 日傍晚在漁光島拍的四顆，轉成 1080p、30fps 的輕量版，含原本的環境音。只能用在這堂課的作業。</p>
-  ${CLIPS.map(c=>`<div class="lutrow"><img src="clips/${c.f}.jpg" alt="${c.name}" loading="lazy" style="object-fit:cover"><div><h3>${c.name}</h3><p class="num">${c.meta}</p><p>老師用在：${c.use}</p><a class="copy" href="clips/${c.f}.mp4" download="漁光島_${c.f}.mp4">${I('down')}下載 .mp4</a></div></div>`).join('')}
+  <div class="lutrows">${CLIPS.map(c=>`<div class="lutrow"><img src="clips/${c.f}.jpg" alt="${c.name}" loading="lazy" style="object-fit:cover"><div><h3>${c.name}</h3><p class="num">${c.meta}</p><p>老師用在：${c.use}</p><a class="copy" href="clips/${c.f}.mp4" download="漁光島_${c.f}.mp4">${I('down')}下載 .mp4</a></div></div>`).join('')}</div>
  </div>`;
 const REFS=[
 {h:'@yuyenwng',url:'https://www.instagram.com/yuyenwng/',name:'格子裡各放各的',desc:'畫面切成格子，每一格錯開時間換鏡頭；鳥、風、腳步、喀嚓聲疊好幾層。老師的漁光島範例影片就是學這個剪法。',g:'grid'},
@@ -595,17 +607,17 @@ function home(){
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
   ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':'<b>SPRING</b>'}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
  </div>
- ${clipSection()}
- ${lutSection()}
+ <div class="section"><h2>今天要帶</h2>
+  <div class="detail" style="cursor:auto">手機（裝好 ChatGPT、Claude 或 Gemini 其中一個）、手機裡三張你喜歡的照片、一個剪輯 App（CapCut、剪映都可以）。</div>
+ </div>
  </aside><div class="c-main"><div class="section"><h2>三小時</h2>
   ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
  </div>
  <div class="section"><h2>今天的十招</h2>
   ${TIPS.map((t,i)=>`<button class="hourrow" type="button" data-jump="${t[3]}" style="grid-template-columns:44px 1fr 18px;padding:12px 0"><span class="num" style="color:var(--rust);font-size:18px">${String(i+1).padStart(2,'0')}</span><div><h3 style="font-size:16px">${esc(t[0])}</h3><p class="num">${(allStops().find(x=>x.id===t[3])||{time:''}).time}</p></div>${I('right')}</button>`).join('')}
  </div>
- <div class="section"><h2>今天要帶</h2>
-  <div class="detail" style="cursor:auto">手機（裝好 ChatGPT、Claude 或 Gemini 其中一個）、手機裡三張你喜歡的照片、一個剪輯 App（CapCut、剪映都可以）。</div>
- </div></div></div>`;
+</div></div>
+ <div class="dl">${clipSection()}${lutSection()}</div>`;
 }
 let curHour=0;
 function route(){
