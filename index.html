@@ -438,6 +438,9 @@ button:active,a.copy:active{transform:translateY(1px)}
 .term p{margin:6px 0 0;font-size:15px;line-height:1.8;color:#3f4741}
 .term .tex{font-size:14px;color:var(--ink);background:var(--rust-tint);padding:6px 10px;margin-top:8px}
 @media(min-width:1024px){.tgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:48px}.tfind{max-width:520px}}
+.refthumb .planet{grid-column:1/-1;justify-self:center;position:relative;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#5c645e 0 34%,#c9d3cf 35% 100%)}
+.refthumb .planet:before{content:"";position:absolute;left:50%;top:6px;width:3px;height:18px;margin-left:-1.5px;background:var(--rust-soft)}
+.refthumb .planet em{position:absolute;inset:-6px;border:1px dashed rgba(244,243,238,.5);border-radius:50%}
 </style>
 </head>
 <body data-phase="pre">
@@ -540,7 +543,7 @@ const clipSection=()=>`<div class="section" id="clips"><h2>素材下載</h2>
  </div>`;
 const REFS=[
 {h:'@yuyenwng',url:'https://www.instagram.com/yuyenwng/',name:'格子裡各放各的',desc:'畫面切成格子，每一格錯開時間換鏡頭；鳥、風、腳步、喀嚓聲疊好幾層。老師的漁光島範例影片就是學這個剪法。',g:'grid'},
-{h:'@oran_pic',url:'https://www.instagram.com/oran_pic/',name:'字很小，很少',desc:'橫的畫面放進直的 Reels，字只有一兩個英文單字。老師片裡的 SPRING / EVENING 就是學這個。',g:'type'}
+{h:'@potato0x_x',url:'https://www.instagram.com/potato0x_x/',name:'畫面上再加一層',desc:'東京的 Reels 創作者。實拍畫面上疊手繪、像素風的圖案和很少的字，也會用小行星這種特殊視角，讓普通的散步、旅行畫面變得好玩。',g:'planet'}
 ];
 const CUE=[
 ['0.00','黑畫面，先出浪聲','走過的人的原音',''],
@@ -686,7 +689,7 @@ function home(){
  </div>
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
-  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':'<b>SPRING</b>'}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
+  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':'<span class="planet"><em></em></span>'}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
  </div>
  <div class="section"><h2>再往下一層</h2>
   <button class="hourrow" type="button" data-go="terms" style="grid-template-columns:1fr 18px"><div><h3 style="font-size:16px">AI 名詞：RAG、LoRA、模式崩塌、MCP……</h3><p>${TERMS.length} 個進階名詞：AI 為什麼這樣回你、怎麼讓它照你要的做。</p></div>${I('right')}</button>
