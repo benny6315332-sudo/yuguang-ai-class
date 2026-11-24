@@ -306,7 +306,7 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .blk button[aria-selected=true]{background:var(--ink);color:var(--on-ink)}
 .blk button[aria-selected=true] i,.blk button[aria-selected=true] .bt span{color:var(--rust-soft)}
 @media(hover:hover){.blk button:not([aria-selected=true]):hover{background:var(--tile)}}
-@media(max-width:520px){.blk button{flex-direction:column;align-items:flex-start;gap:4px}.blk i{font-size:20px}}
+
 .jkthumb{position:relative;display:grid;place-items:center;background:linear-gradient(to bottom,#aaa598 0%,#9e7f62 46%,#363931 82%,#353833 100%);overflow:hidden}
 .jkthumb:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.05) 0 1px,transparent 1px 3px);pointer-events:none}
 .jkthumb svg{width:26px;height:26px;fill:#f4f3ee;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
@@ -373,6 +373,21 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .ckrow{display:flex;gap:10px;align-items:center;width:100%;min-height:48px;padding:8px 0;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;font-size:15px;color:var(--ink)}
 .ckrow .ico{color:var(--muted)}
 .ckrow[aria-pressed=true]{color:var(--muted)}.ckrow[aria-pressed=true] span{text-decoration:line-through;text-decoration-thickness:1px}.ckrow[aria-pressed=true] .ico{color:var(--green)}
+html{touch-action:manipulation}
+button,a{-webkit-tap-highlight-color:transparent}
+.ckrow{min-height:52px;font-size:16px}
+.hourrow p a,.hourrow p button{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;margin-right:12px}
+button:active,a.copy:active{transform:translateY(1px)}
+.blk button:active,.ckrow:active,.hourrow:active{opacity:.75;transform:none}
+@media(max-width:1023px){
+ .blk{gap:4px}
+ .blk button{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:56px;padding:8px 10px}
+ .blk i{display:none}
+ .blk .bt b{font-size:15px}
+ .blk .bt span{font-size:12px}
+ .detail{font-size:15px}
+ .tabs{padding-top:8px;padding-bottom:8px}
+}
 .brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
 .trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
@@ -412,6 +427,8 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .src{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.8}
 .src a{text-decoration:underline;text-underline-offset:3px}
 .clock{font:500 40px/1 var(--mono);letter-spacing:-.04em;color:var(--rust);font-variant-numeric:tabular-nums}
+.stop .chk,.copy{min-height:48px;padding:0 16px;font-size:14px}
+.src a{display:inline-flex;align-items:center;min-height:44px}
 </style>
 </head>
 <body data-phase="pre">
@@ -634,7 +651,7 @@ function route(){
    <p class="detail" style="cursor:auto">${esc(s.detail)}</p>
    ${s.media||''}${s.after==='cue'?cueTable():''}${s.after==='check'?checkList():''}${s.prompt?promptBox(s.prompt):''}
    ${s.alert?`<div class="alert">${I('warn')}<span>${esc(s.alert)}</span></div>`:''}
-   <button class="chk" type="button" data-done="${s.id}" aria-pressed="${!!done}">${I('check')}${done?'完成了':'標記完成'}</button>
+   <button class="chk" type="button" data-done="${s.id}" aria-pressed="${!!done}">${I('check')}<span>${done?'完成了':'標記完成'}</span></button>
   </div></li>`}).join('')}
  </ol></div></div>`;
 }
@@ -657,14 +674,18 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('button,a');if(!t)return;
  if(t.dataset.page){go(t.dataset.page);return}
  if(t.dataset.go){e.preventDefault();go(t.dataset.go);return}
- if(t.dataset.hour!=null){curHour=+t.dataset.hour;if(page!=='route')go('route');else{render()}return}
+ if(t.dataset.hour!=null){const nh=+t.dataset.hour;if(page!=='route'){curHour=nh;go('route');return}if(nh===curHour)return;curHour=nh;render();const tb=document.querySelector('#page-route .tabs');if(tb&&window.scrollY>tb.offsetTop)window.scrollTo(0,0);return}
  if(t.dataset.jump){const id=t.dataset.jump;curHour=HOURS.findIndex(h=>STOPS[h.id].some(x=>x.id===id));go('route');setTimeout(()=>{const el=document.querySelector(`[data-done="${id}"]`);if(el){const y=el.closest('.stop').getBoundingClientRect().top+window.scrollY-150;window.scrollTo(0,y)}},50);return}
- if(t.dataset.ck){const id=t.dataset.ck;if(state.checks[id])delete state.checks[id];else state.checks[id]=true;save();render();return}
- if(t.dataset.done){const id=t.dataset.done;if(state.done[id])delete state.done[id];else state.done[id]=true;save();render();return}
+ if(t.dataset.ck){const id=t.dataset.ck,on=!state.checks[id];if(on)state.checks[id]=true;else delete state.checks[id];save();
+  t.setAttribute('aria-pressed',on);t.querySelector('use').setAttribute('href',on?'#i-check':'#i-box');
+  const cnt=t.closest('.cklist').querySelector('p.num');if(cnt)cnt.textContent=`${CHECKS.filter(c=>state.checks[c[0]]).length} / ${CHECKS.length}`;return}
+ if(t.dataset.done){const id=t.dataset.done,on=!state.done[id];if(on)state.done[id]=true;else delete state.done[id];save();
+  t.closest('.stop').classList.toggle('done',on);t.setAttribute('aria-pressed',on);t.lastChild.textContent=on?'完成了':'標記完成';return}
  if(t.dataset.copy){const txt=PROMPTS[t.dataset.copy].text;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('複製好了，貼給 AI 吧')).catch(()=>toast('沒辦法自動複製，請長按文字選取'));return}
  if(t.id==='startBtn'){state.start=Date.now();state.done={};save();toast('開始計時');render()}
 });
-setInterval(()=>{if(state.start&&(page==='home'||page==='route'))render()},30000);
+setInterval(()=>{if(!state.start)return;if(page==='home'){render();return}
+ if(page==='route'){const n=nowStop();document.querySelectorAll('#page-route .stop').forEach(li=>{const b=li.querySelector('[data-done]');li.classList.toggle('now',!!(n&&b&&b.dataset.done===n.id))})}},30000);
 const h0=(location.hash||'').slice(1);if(PAGES[h0])page=h0;
 render();
 </script>
