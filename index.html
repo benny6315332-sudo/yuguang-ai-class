@@ -441,6 +441,13 @@ button:active,a.copy:active{transform:translateY(1px)}
 .refthumb .planet{grid-column:1/-1;justify-self:center;position:relative;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#5c645e 0 34%,#c9d3cf 35% 100%)}
 .refthumb .planet:before{content:"";position:absolute;left:50%;top:6px;width:3px;height:18px;margin-left:-1.5px;background:var(--rust-soft)}
 .refthumb .planet em{position:absolute;inset:-6px;border:1px dashed rgba(244,243,238,.5);border-radius:50%}
+.refthumb .rg{grid-column:1/-1;justify-self:center;position:relative;width:52px;height:52px}
+.rg-flip:before,.rg-flip:after{content:"";position:absolute;left:14px;top:4px;width:24px;height:42px;border:2px solid #c9d3cf;border-radius:4px}
+.rg-flip:after{border-color:var(--rust-soft);transform:rotate(28deg)}
+.rg-magic:before{content:"";position:absolute;inset:6px;border:2px dashed #c9d3cf}
+.rg-magic:after{content:"";position:absolute;left:21px;top:21px;width:10px;height:10px;background:var(--rust-soft);transform:rotate(45deg);box-shadow:0 0 0 4px rgba(227,154,113,.25)}
+.rg-scenic{background:linear-gradient(to bottom,#c9d3cf 0 48%,var(--rust-soft) 48% 54%,#5c645e 54% 100%)}
+.rg-scenic:after{content:"";position:absolute;left:30px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--rust-soft)}
 </style>
 </head>
 <body data-phase="pre">
@@ -543,7 +550,10 @@ const clipSection=()=>`<div class="section" id="clips"><h2>素材下載</h2>
  </div>`;
 const REFS=[
 {h:'@yuyenwng',url:'https://www.instagram.com/yuyenwng/',name:'格子裡各放各的',desc:'畫面切成格子，每一格錯開時間換鏡頭；鳥、風、腳步、喀嚓聲疊好幾層。老師的漁光島範例影片就是學這個剪法。',g:'grid'},
-{h:'@potato0x_x',url:'https://www.instagram.com/potato0x_x/',name:'畫面上再加一層',desc:'東京的 Reels 創作者。實拍畫面上疊手繪、像素風的圖案和很少的字，也會用小行星這種特殊視角，讓普通的散步、旅行畫面變得好玩。',g:'planet'}
+{h:'@potato0x_x',url:'https://www.instagram.com/potato0x_x/',name:'畫面上再加一層',desc:'東京的 Reels 創作者。實拍畫面上疊手繪、像素風的圖案和很少的字，也會用小行星這種特殊視角，讓普通的散步、旅行畫面變得好玩。',g:'planet'},
+{h:'@zono.sann',url:'https://www.instagram.com/zono.sann/',name:'只用手機的轉場',desc:'日本的短影音創作者。不靠後製，用甩手機、翻轉手機、身邊的小東西做轉場，喝個下午茶、出門散步都能拍得很好玩。',g:'flip'},
+{h:'@zachking',url:'https://www.instagram.com/zachking/',name:'看不出破綻的魔術',desc:'美國的影像創作者，招牌是「數位魔術」：把實拍和特效接得看不出破綻，人好像真的走進畫裡。看他一個動作接下一個動作怎麼對齊。',g:'magic'},
+{h:'@jodiardyansyah',url:'https://www.instagram.com/jodiardyansyah/',name:'風景素材怎麼剪成片',desc:'把旅行拍的風景和片段剪成有節奏的 Reels，也會教怎麼用手機 App 剪接。跟這堂課一樣：素材有了，重點是怎麼排。',g:'scenic'}
 ];
 const CUE=[
 ['0.00','黑畫面，先出浪聲','走過的人的原音',''],
@@ -689,7 +699,7 @@ function home(){
  </div>
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
-  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':'<span class="planet"><em></em></span>'}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
+  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':r.g==='planet'?'<span class="planet"><em></em></span>':`<span class="rg rg-${r.g}"></span>`}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
  </div>
  <div class="section"><h2>再往下一層</h2>
   <button class="hourrow" type="button" data-go="terms" style="grid-template-columns:1fr 18px"><div><h3 style="font-size:16px">AI 名詞：RAG、LoRA、模式崩塌、MCP……</h3><p>${TERMS.length} 個進階名詞：AI 為什麼這樣回你、怎麼讓它照你要的做。</p></div>${I('right')}</button>
