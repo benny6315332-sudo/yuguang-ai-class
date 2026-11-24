@@ -333,6 +333,19 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .lutrow h3{font-size:16px;line-height:1.4}.lutrow h3 .num{font-size:11px;color:var(--muted);font-weight:500;margin-left:4px}
 .lutrow p{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.7}
 .lutrow .copy{margin-top:8px;text-decoration:none}
+.refthumb{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:10px;background:var(--ink);align-content:center}
+.refthumb i{display:block;aspect-ratio:1;background:#5c645e}.refthumb i.o{background:var(--rust-soft)}
+.refthumb b{grid-column:1/-1;text-align:center;color:var(--rice);font:500 11px var(--mono);letter-spacing:.12em}
+.cue table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5}
+.cue th{text-align:left;font-size:11px;font-weight:700;color:var(--muted);padding:6px 8px 6px 0;border-bottom:1px solid var(--ink)}
+.cue td{vertical-align:top;padding:8px 8px 8px 0;border-bottom:1px solid var(--line)}
+.cue td:first-child{white-space:nowrap;color:var(--rust);width:1%}
+.cue td:last-child{white-space:nowrap;color:var(--muted);width:1%}
+.cue small{display:block;color:var(--muted);font-size:12px}
+.cklist{margin-top:12px;border-top:1px solid var(--ink)}
+.ckrow{display:flex;gap:10px;align-items:center;width:100%;min-height:48px;padding:8px 0;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;font-size:15px;color:var(--ink)}
+.ckrow .ico{color:var(--muted)}
+.ckrow[aria-pressed=true]{color:var(--muted)}.ckrow[aria-pressed=true] span{text-decoration:line-through;text-decoration-thickness:1px}.ckrow[aria-pressed=true] .ico{color:var(--green)}
 .brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
 .trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
@@ -386,6 +399,7 @@ button.inner:active{opacity:.72;transform:scale(.98)}
  <symbol id="i-list" viewBox="0 0 24 24"><path d="m2.7 7.1 2 2.1 3.6-4.1M11.5 7.2H21m-18.3 9 2 2.1 3.6-4.1m3.2 2.1H21"/></symbol>
  <symbol id="i-yuguang" viewBox="0 0 24 24"><path d="M6.5 12.5a5.5 5.5 0 0 1 11 0"/><path d="M2 12.5h20"/><path d="M3 16q2.25-1.2 4.5 0t4.5 0 4.5 0 4.5 0M5 19.5q1.75-1 3.5 0t3.5 0 3.5 0 3.5 0"/><path d="M19 12.5V6.8l2.6 1.1L19 9"/></symbol>
  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+ <symbol id="i-box" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></symbol>
  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></symbol>
 </svg>
 <div class="topline"></div>
@@ -439,6 +453,49 @@ const lutSection=()=>`<div class="section" id="luts"><h2>LUT 下載</h2>
   ${LUTS.map(l=>`<div class="lutrow"><img src="lut/preview-${l.slug}.jpg" alt="套上${l.name}的漁光島" loading="lazy"><div><h3>${l.name} <span class="num">${l.en}</span></h3><p>${l.desc}</p><a class="copy" href="lut/${l.slug}.cube" download="${l.name}_${l.en.replace(/ /g,'')}_Rec709.cube">${I('down')}下載 .cube</a></div></div>`).join('')}
   <div class="lutrow"><img src="lut/preview-original.jpg" alt="沒有套 LUT 的原圖" loading="lazy"><div><h3>原圖</h3><p>上面三張都是用這張漁光島套出來的。</p><a class="copy" href="lut/yuguang-luts.zip" download="漁光島_LUT_三款.zip">${I('down')}三款一起下載 .zip</a></div></div>
  </div>`;
+const CLIPS=[
+{f:'01-sunset',name:'夕陽',meta:'18:07:07 · 6.7 秒 · 橫的',use:'開場、九格'},
+{f:'02-photographing',name:'我在拍照',meta:'17:49:21 · 5.0 秒 · 直的',use:'三欄'},
+{f:'03-silhouette',name:'剪影',meta:'18:07:36 · 10.6 秒 · 直的',use:'剪影段'},
+{f:'04-walkers',name:'走過的人',meta:'17:57:30 · 10.8 秒 · 橫的',use:'最後的長鏡頭、浪聲'}
+];
+const clipSection=()=>`<div class="section" id="clips"><h2>素材下載</h2>
+  <p class="help" style="margin-top:12px">3 月 25 日傍晚在漁光島拍的四顆，轉成 1080p、30fps 的輕量版，含原本的環境音。只能用在這堂課的作業。</p>
+  ${CLIPS.map(c=>`<div class="lutrow"><img src="clips/${c.f}.jpg" alt="${c.name}" loading="lazy" style="object-fit:cover"><div><h3>${c.name}</h3><p class="num">${c.meta}</p><p>老師用在：${c.use}</p><a class="copy" href="clips/${c.f}.mp4" download="漁光島_${c.f}.mp4">${I('down')}下載 .mp4</a></div></div>`).join('')}
+ </div>`;
+const REFS=[
+{h:'@yuyenwng',url:'https://www.instagram.com/yuyenwng/',name:'格子裡各放各的',desc:'畫面切成格子，每一格錯開時間換鏡頭；鳥、風、腳步、喀嚓聲疊好幾層。老師的海邊片就是學這個剪法。',g:'grid'},
+{h:'@oran_pic',url:'https://www.instagram.com/oran_pic/',name:'字很小，很少',desc:'橫的畫面放進直的 Reels，字只有一兩個英文單字。老師片裡的 SPRING / EVENING 就是學這個。',g:'type'}
+];
+const CUE=[
+['0.00','黑畫面，先出浪聲','走過的人的原音',''],
+['0.20','夕陽九格亮第一批（3 格）','','小快門'],
+['0.33','再亮 3 格','','小快門'],
+['0.46','最後 3 格，九格滿','','小快門'],
+['0.54','音樂第一個重拍','Spring Evening 從 0.25 秒開始',''],
+['1.09','左右兩格閃出 SPRING / EVENING','到 2.62 消失',''],
+['2.72','三欄換成「我在拍照」，左欄先換','','大快門'],
+['2.86 / 2.99','中欄、右欄跟著換，每欄晚一拍','三欄是同一顆，起點錯開','小快門 ×2'],
+['4.90','九格細節分四批亮起','4.90、5.04、5.17、5.31','小快門 ×4'],
+['5.99','中間那格換成側臉特寫','','小快門'],
+['6.96','上排中間白閃兩格','預告要換了','小快門'],
+['7.09','九格一格一格換成剪影','每格隔 0.07 秒，從中間開始','小快門 ×9'],
+['8.18','三欄對齊成一張完整剪影','剛好舉著相機','大快門'],
+['10.36','放下相機，落在拍子上','',''],
+['10.70','whoosh 開始','',''],
+['11.45','整張硬切到「走過的人」，格線拿掉','全片唯一一次整張切',''],
+['15.81','TAINAN / MARCH 出現在左右','到 17.70',''],
+['17.60','音樂開始淡出','',''],
+['17.99','格子一格一格熄掉','每格隔 0.07 秒','小快門 ×9'],
+['19.00','結束，黑畫面接回開頭','IG 上可以無縫重播','']
+];
+const cueTable=()=>`<div class="cue"><div class="dmeta" style="margin:14px 0 6px">剪輯表：老師的海邊格子版（19 秒，音樂每分鐘 110 拍）</div><table><thead><tr><th>秒</th><th>畫面</th><th>聲音</th></tr></thead><tbody>${CUE.map(r=>`<tr><td class="num">${r[0]}</td><td>${esc(r[1])}${r[2]?`<small>${esc(r[2])}</small>`:''}</td><td>${esc(r[3])}</td></tr>`).join('')}</tbody></table></div>`;
+const CHECKS=[
+['c1','白平衡是手動的，整支沒有忽黃忽藍'],['c2','LUT 有套上，每一段顏色一致'],['c3','每次換畫面，都卡在音樂的拍子上'],
+['c4','字出來之後，有留時間讓人讀完'],['c5','最後有一段不剪，讓畫面自己走'],['c6','直式 9:16，大約 15 秒'],
+['c7','字和重點沒有被 Reels 上下的按鈕擋到'],['c8','音樂是剪輯 App 內建的']
+];
+const checkList=()=>`<div class="cklist">${CHECKS.map(([id,t])=>`<button type="button" class="ckrow" data-ck="${id}" aria-pressed="${!!state.checks[id]}">${I(state.checks[id]?'check':'box')}<span>${esc(t)}</span></button>`).join('')}<p class="num" style="font-size:12px;color:var(--muted);margin:8px 0 0">${CHECKS.filter(c=>state.checks[c[0]]).length} / ${CHECKS.length}</p></div>`;
 const HOURS=[
 {id:'h1',n:'第一小時',range:'0:00 – 1:00',name:'AI 做的東西，為什麼都長一樣',img:'img/h1.jpg',desc:'先看田柾國用 Blackmagic Camera 拍的高雄，再看老師的片，最後每個人親手做一次「AI 第一稿」。'},
 {id:'h2',n:'第二小時',range:'1:00 – 2:05',name:'怎麼跟 AI 講話',img:'edit/v7_3.60.jpg',desc:'老師在電腦上示範：從丟參考、要方向，到拿到一張剪輯表，再在剪輯軟體裡剪出來。'},
@@ -462,13 +519,14 @@ h2:[
 {id:'b3',time:'1:13 – 1:21',k:'示範',name:'第 2 招：讓 AI 讀你已經有的東西，重建再改',detail:'不要讓它憑空想，先讓它讀你手上已經有的東西。我們這次讓它讀 Blackmagic Camera 寫在影片檔裡的資訊：夕陽和剪影只差 29 秒，白平衡卻差了 1000K。這個數字是從檔案讀出來的，不是它編的。',media:'<figure class="media"><img src="img/tn_sun.jpg" alt="夕陽，白平衡 4870K" loading="lazy" style="max-width:240px"><figcaption>夕陽 18:07:07 · 4870K</figcaption></figure>'},
 {id:'b4',time:'1:21 – 1:29',k:'示範',name:'第 6 招：點出 AI 慣用的字體、顏色與裝飾',detail:'AI 不知道自己有偏好，所以要你幫它點出來。老師的做法是直接問它，讓它自己列出來，再叫它避開。',prompt:'p4'},
 {id:'b4b',time:'1:29 – 1:35',k:'示範',name:'第 3 招：大型簡報先試風格',detail:'整份做完才說不喜歡，就要整份重來。先只做三頁試風格，確認給誰看、在哪裡用，再展開成整份。老師這門課的第一版簡報就是反例：整份做完才發現像 AI 做的，整份重做。',prompt:'p7'},
-{id:'b5',time:'1:35 – 1:55',k:'示範',name:'老師在電腦上做一次：海邊片',detail:'一、丟參考：三支存著的 Reels 加四顆海邊素材。二、要十個剪法方向。三、挑兩個混。四、要一張剪輯表：幾秒換哪一格、哪裡下快門聲。五、照著表，在剪輯軟體裡剪。',media:'<figure class="media"><img src="edit/v7_5.60.jpg" alt="海邊九格畫面" loading="lazy"></figure>',alert:'最後一步是人做的。AI 給的是剪法和時間表，手感要自己練。'},
+{id:'b5',time:'1:35 – 1:55',k:'示範',name:'老師在電腦上做一次：海邊片',detail:'一、丟參考：三支存著的 Reels 加四顆海邊素材。二、要十個剪法方向。三、挑兩個混。四、要一張剪輯表：幾秒換哪一格、哪裡下快門聲。五、照著表，在剪輯軟體裡剪。',media:'<figure class="media"><img src="edit/v7_5.60.jpg" alt="海邊九格畫面" loading="lazy"></figure>',after:'cue',alert:'最後一步是人做的。AI 給的是剪法和時間表，手感要自己練。'},
 {id:'b6',time:'1:55 – 2:05',k:'休',name:'休息',detail:'把老師的四顆海邊素材存到手機裡。'}
 ],
 h3:[
 {id:'c1',time:'2:05 – 2:10',k:'看',name:'第 8 招：動畫要留時間給觀眾看懂',detail:'AI 可以同時讀很多東西，人不行，人一次只能看一個地方。字出來之後，要留夠時間讓人讀完，再換下一個重點。老師的海邊片裡，換格都擠在段落交界，段落中間讓畫面自己走，最後 7.5 秒一刀都不剪。',media:'<figure class="media"><img src="edit/v7_13.00.jpg" alt="最後的長鏡頭：兩個人走過海邊" loading="lazy"></figure>'},
-{id:'c2',time:'2:10 – 2:45',k:'做',name:'換你：四顆素材，剪 15 秒',detail:'不用自己拍。用老師的四顆素材，先把第一段話貼給 AI，回答它的三個問題，從十個方向裡挑兩個混，再要一張剪輯表。照著表，用手機剪。',prompt:'p5',alert:'音樂用剪輯 App 內建的。老師片裡的配樂是付費音樂庫的，不能轉給大家。'},
+{id:'c2',time:'2:10 – 2:40',k:'做',name:'換你：四顆素材，剪 15 秒',detail:'不用自己拍。素材在首頁「素材下載」。用老師的四顆素材，先把第一段話貼給 AI，回答它的三個問題，從十個方向裡挑兩個混，再要一張剪輯表。照著表，用手機剪。',prompt:'p5',alert:'音樂用剪輯 App 內建的。老師片裡的配樂是付費音樂庫的，不能轉給大家。'},
 {id:'c2b',time:'2:20',k:'做',name:'挑好方向之後',detail:'把你挑的兩個方向告訴它，要一張剪輯表。',prompt:'p6'},
+{id:'c2c',time:'2:40 – 2:45',k:'做',name:'交之前檢查一次',detail:'剪完自己對一遍，每一項都打勾再交。',after:'check'},
 {id:'c3',time:'2:45 – 2:50',k:'看',name:'互相看',detail:'每組放一支。大家說兩件事：哪裡像 AI 給的，哪裡看得出是你自己決定的。'},
 {id:'c4',time:'2:50 – 2:53',k:'看',name:'第 7 招：把資料做成會更新的儀表板',detail:'能做成網頁，就不要做成死的檔案。把一份試算表交給 AI，請它做成儀表板，資料一改，圖表會自己跟著變。這份課程手札本身就是一個網頁：課表會計時、提示詞按一下就能複製。'},
 {id:'c4b',time:'2:53 – 2:56',k:'看',name:'第 9 招：把經驗寫成 Skill，再出題測試',detail:'做順了，就把做法寫成一份說明（Skill）：節奏、停頓、哪些不要做。接著開一個新對話，只給它這份說明，出一個新題目，看它照做出來的東西對不對。今天的格子剪法，就可以這樣寫下來，下次換新素材測。'},
@@ -489,8 +547,8 @@ const TIPS=[
 ];
 
 /* state */
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.done)return s}catch(e){}return{done:{},start:null}}
-let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.done)return s}catch(e){}return{done:{},start:null,checks:{}}}
+let state=load();if(!state.checks)state.checks={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2400)}
 const toMin=x=>{const[a,b]=x.split(':');return +a*60+ +b};
@@ -520,7 +578,9 @@ function home(){
  </div>
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
+  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':'<b>SPRING</b>'}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
  </div>
+ ${clipSection()}
  ${lutSection()}
  </aside><div class="c-main"><div class="section"><h2>三小時</h2>
   ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
@@ -545,7 +605,7 @@ function route(){
   <div class="stime"><b class="num">${s.time.split(' – ')[0]}</b><span class="num">${s.time.includes('–')?'– '+s.time.split(' – ')[1]:''}</span></div>
   <div class="sbody">${now?'<span class="tag now">現在</span><br>':''}<h3>${kTag[s.k]||''}${esc(s.name)}</h3>
    <p class="detail" style="cursor:auto">${esc(s.detail)}</p>
-   ${s.media||''}${s.prompt?promptBox(s.prompt):''}
+   ${s.media||''}${s.after==='cue'?cueTable():''}${s.after==='check'?checkList():''}${s.prompt?promptBox(s.prompt):''}
    ${s.alert?`<div class="alert">${I('warn')}<span>${esc(s.alert)}</span></div>`:''}
    <button class="chk" type="button" data-done="${s.id}" aria-pressed="${!!done}">${I('check')}${done?'完成了':'標記完成'}</button>
   </div></li>`}).join('')}
@@ -572,6 +632,7 @@ document.addEventListener('click',e=>{
  if(t.dataset.go){e.preventDefault();go(t.dataset.go);return}
  if(t.dataset.hour!=null){curHour=+t.dataset.hour;if(page!=='route')go('route');else{render()}return}
  if(t.dataset.jump){const id=t.dataset.jump;curHour=HOURS.findIndex(h=>STOPS[h.id].some(x=>x.id===id));go('route');setTimeout(()=>{const el=document.querySelector(`[data-done="${id}"]`);if(el){const y=el.closest('.stop').getBoundingClientRect().top+window.scrollY-150;window.scrollTo(0,y)}},50);return}
+ if(t.dataset.ck){const id=t.dataset.ck;if(state.checks[id])delete state.checks[id];else state.checks[id]=true;save();render();return}
  if(t.dataset.done){const id=t.dataset.done;if(state.done[id])delete state.done[id];else state.done[id]=true;save();render();return}
  if(t.dataset.copy){const txt=PROMPTS[t.dataset.copy].text;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('複製好了，貼給 AI 吧')).catch(()=>toast('沒辦法自動複製，請長按文字選取'));return}
  if(t.id==='startBtn'){state.start=Date.now();state.done={};save();toast('開始計時');render()}
