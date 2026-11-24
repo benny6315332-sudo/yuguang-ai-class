@@ -307,7 +307,7 @@ button.inner:active{opacity:.72;transform:scale(.98)}
  #page-home .trip-cover h1{font-size:72px}
  #page-home .trip-cover .sub{font-size:17px}
  .cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;margin-top:40px;align-items:start}
- .c-side{position:sticky;top:calc(var(--header) + 24px)}
+ .c-side{position:static}
  .c-side .lead{padding-top:0}
  .c-main>.section:first-child{margin-top:0}
  .rlayout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:56px;align-items:start}
@@ -328,6 +328,11 @@ button.inner:active{opacity:.72;transform:scale(.98)}
  .pagehead h1{font-size:44px}
  .pagehead{max-width:720px}
 }
+.lutrow{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.lutrow img{width:120px;height:80px;object-fit:cover;display:block;background:var(--tile)}
+.lutrow h3{font-size:16px;line-height:1.4}.lutrow h3 .num{font-size:11px;color:var(--muted);font-weight:500;margin-left:4px}
+.lutrow p{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.7}
+.lutrow .copy{margin-top:8px;text-decoration:none}
 .brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
 .trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
@@ -380,6 +385,7 @@ button.inner:active{opacity:.72;transform:scale(.98)}
  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
  <symbol id="i-list" viewBox="0 0 24 24"><path d="m2.7 7.1 2 2.1 3.6-4.1M11.5 7.2H21m-18.3 9 2 2.1 3.6-4.1m3.2 2.1H21"/></symbol>
  <symbol id="i-yuguang" viewBox="0 0 24 24"><path d="M6.5 12.5a5.5 5.5 0 0 1 11 0"/><path d="M2 12.5h20"/><path d="M3 16q2.25-1.2 4.5 0t4.5 0 4.5 0 4.5 0M5 19.5q1.75-1 3.5 0t3.5 0 3.5 0 3.5 0"/><path d="M19 12.5V6.8l2.6 1.1L19 9"/></symbol>
+ <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></symbol>
 </svg>
 <div class="topline"></div>
@@ -423,6 +429,16 @@ p6:{label:'挑好方向之後',when:'2:20',text:'我選第【　】個的開場�
 };
 const promptBox=id=>{const p=PROMPTS[id];return `<div class="prompt"><div class="pl">${esc(p.label)}</div><p>${esc(p.text)}</p><button class="copy" type="button" data-copy="${id}">${I('copy')}複製這段</button></div>`};
 
+const LUTS=[
+{slug:'harbour-amber',name:'港都暗黃',en:'Harbour Amber',desc:'偏暗黃、褪色，暗部帶一點綠。最接近田柾國那支的感覺，是照報導的描述調的，不是他的原始 LUT。'},
+{slug:'afternoon-fade',name:'午後褪色',en:'Afternoon Fade',desc:'反差最低，整體像曬過太陽的舊照片，亮部發白、顏色淡。'},
+{slug:'cijin-tide',name:'旗津冷暖',en:'Cijin Tide',desc:'暗部偏青、亮部偏暖，適合海邊和黃昏。'}
+];
+const lutSection=()=>`<div class="section" id="luts"><h2>LUT 下載</h2>
+  <p class="help" style="margin-top:12px">三個 .cube 檔，Rec.709、33 點。在 Blackmagic Camera 的 Settings → LUTs 匯入，開啟 Record LUT to Clip。iPhone 拍 Apple Log 的話要先轉成 Rec.709 再套。</p>
+  ${LUTS.map(l=>`<div class="lutrow"><img src="lut/preview-${l.slug}.jpg" alt="套上${l.name}的漁光島" loading="lazy"><div><h3>${l.name} <span class="num">${l.en}</span></h3><p>${l.desc}</p><a class="copy" href="lut/${l.slug}.cube" download="${l.name}_${l.en.replace(/ /g,'')}_Rec709.cube">${I('down')}下載 .cube</a></div></div>`).join('')}
+  <div class="lutrow"><img src="lut/preview-original.jpg" alt="沒有套 LUT 的原圖" loading="lazy"><div><h3>原圖</h3><p>上面三張都是用這張漁光島套出來的。</p><a class="copy" href="lut/yuguang-luts.zip" download="漁光島_LUT_三款.zip">${I('down')}三款一起下載 .zip</a></div></div>
+ </div>`;
 const HOURS=[
 {id:'h1',n:'第一小時',range:'0:00 – 1:00',name:'AI 做的東西，為什麼都長一樣',img:'img/h1.jpg',desc:'先看田柾國用 Blackmagic Camera 拍的高雄，再看老師的片，最後每個人親手做一次「AI 第一稿」。'},
 {id:'h2',n:'第二小時',range:'1:00 – 2:05',name:'怎麼跟 AI 講話',img:'edit/v7_3.60.jpg',desc:'老師在電腦上示範：從丟參考、要方向，到拿到一張剪輯表，再在剪輯軟體裡剪出來。'},
@@ -431,7 +447,7 @@ const HOURS=[
 const STOPS={
 h1:[
 {id:'j1',time:'0:00 – 0:10',k:'看',name:'先看：田柾國的《在高雄的自由時間》',detail:'2026 年 11 月 21 日凌晨，田柾國在 IG 發了一支 2 分 22 秒的影片，用 Blackmagic Camera 這個手機 App 拍高雄。他拍了：輕軌、巷子裡的招牌、店裡的電風扇、路邊的腳踏車、經過的人、揮手的粉絲、駁二、旗津的海。沒有一個是觀光地標的正面照。顏色偏暗黃，配樂是董運昌的〈碧海藍天〉。',media:'<p class="src" style="margin-top:10px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener">到 IG 看原片 · @mnijungkook</a></p><div style="margin-top:14px"><div class="dmeta">他片子裡的顏色：從一個畫面量出來的</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px"><div><span style="display:block;height:56px;background:#aaa598"></span><b style="display:block;font-size:13px;margin-top:6px">最亮</b><span class="num" style="font-size:11px;color:var(--muted)">#AAA598</span></div><div><span style="display:block;height:56px;background:#9e7f62"></span><b style="display:block;font-size:13px;margin-top:6px">中間</b><span class="num" style="font-size:11px;color:var(--muted)">#9E7F62</span></div><div><span style="display:block;height:56px;background:#363931"></span><b style="display:block;font-size:13px;margin-top:6px">暗部</b><span class="num" style="font-size:11px;color:var(--muted)">#363931</span></div><div><span style="display:block;height:56px;background:#353833"></span><b style="display:block;font-size:13px;margin-top:6px">最暗</b><span class="num" style="font-size:11px;color:var(--muted)">#353833</span></div></div><p class="detail" style="cursor:auto;margin-top:10px">最亮的地方沒有到全白，最暗的地方也沒有到全黑，暗部還帶一點綠。整個畫面像褪過色，亮部偏黃。這就是「暗黃」的來源。</p></div>',alert:'看兩次。第二次邊看邊抄：他鏡頭對著什麼？鏡頭有沒有在動？在哪裡換鏡頭？顏色往哪裡偏？'},
-{id:'j2',time:'0:10 – 0:20',k:'看',name:'他用的 Blackmagic Camera，開拍前設一次就好',detail:'免費，iPhone、Android 都有。老師上一份簡報〈口袋裡的電影機〉整理的設定：幀率 24（在 Project 裡）；快門 180°，也就是 1/48 秒，動作有自然的拖影；ISO 越低越好，白天 50 到 200；白平衡用手動，日光大約 5600K，不要交給自動；格式 H.265、4K、Rec.709，再套一個 LUT 決定顏色。',alert:'老師自己最常犯的兩個錯：白平衡沒鎖，同一片海 29 秒內跳了 1000K；大太陽忘了帶減光鏡，快門被逼到 1/1172。'},
+{id:'j2',time:'0:10 – 0:20',k:'看',name:'他用的 Blackmagic Camera，開拍前設一次就好',detail:'免費，iPhone、Android 都有。老師上一份簡報〈口袋裡的電影機〉整理的設定：幀率 24（在 Project 裡）；快門 180°，也就是 1/48 秒，動作有自然的拖影；ISO 越低越好，白天 50 到 200；白平衡用手動，日光大約 5600K，不要交給自動；格式 H.265、4K、Rec.709，再套一個 LUT 決定顏色。老師調好的三個 LUT 在首頁「LUT 下載」。',alert:'老師自己最常犯的兩個錯：白平衡沒鎖，同一片海 29 秒內跳了 1000K；大太陽忘了帶減光鏡，快門被逼到 1/1172。'},
 
 {id:'a1',time:'0:20 – 0:25',k:'看',name:'再看老師的 19 秒：也是 Blackmagic Camera 拍的',detail:'用同一個 App、同樣的設定，3 月 25 日傍晚在台南漁光島拍的。這支片和這份手札，都是老師跟 Claude 一起做的。素材是老師拍的，方向是老師定的；AI 負責分析、試很多版本、把話變成畫面。',media:'<figure class="media vid"><video src="edit/v7.mp4" poster="edit/v7_poster.jpg" controls playsinline preload="none"></video></figure>',alert:'看完寫一句：你覺得哪裡像 AI 做的，哪裡不像？'},
 {id:'a2',time:'0:25 – 0:30',k:'看',name:'老師的第一稿 vs 改完',detail:'同一堂課的簡報。第一稿是 AI 自己決定的：米白底、橘色、一排同樣大小的卡片、每張一個小圖示、標題上面一行英文小字。老闆看完只說一句：跟其他人做的一樣。改完的版本，顏色從海邊素材取、照片當版面、數字從影片檔讀出來。',media:'<div class="pair"><figure class="media shot"><img src="img/before.jpg" alt="第一稿：米白底和橘色卡片" loading="lazy"><figcaption>第一稿</figcaption></figure><figure class="media shot"><img src="img/after.jpg" alt="改完：深海色底和四張海邊照片" loading="lazy"><figcaption>改完</figcaption></figure></div>'},
@@ -505,6 +521,7 @@ function home(){
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
  </div>
+ ${lutSection()}
  </aside><div class="c-main"><div class="section"><h2>三小時</h2>
   ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
  </div>
