@@ -476,6 +476,17 @@ const I=(id,cls='ico')=>`<svg class="${cls}" aria-hidden="true"><use href="#i-${
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* 提示詞：學生可以直接複製 */
+const GHP={
+g1:{cat:'看片分析',act:'Film Critic',label:'影評人',text:'你現在是一位影評人。我會貼上一支影片的描述、逐字稿或截圖：【　】。\n請從畫面、鏡頭、剪接節奏、顏色、音樂五個方面評論，每一項各說一個優點、一個缺點。最後用一句話說它想讓人感受到什麼。'},
+g2:{cat:'看片分析',act:'Viral Video Analyzer',label:'爆紅短片分析',text:'你是專門分析 IG Reels 和 TikTok 爆紅影片的分析師。我會給你一支影片的描述和數字（觀看、按讚、留言）：【　】。\n請分析：前 3 秒怎麼抓住人、整支的節奏、字幕和封面、配樂、大家為什麼會分享。最後給我三個可以直接用在我下一支片的建議。'},
+g4:{cat:'規劃拍攝',act:'6-Panel Storyboard Mastery',label:'六格分鏡',text:'你是分鏡師。幫我把【主題】規劃成 6 格分鏡：\n1 遠景，交代地點　2 中景，人物反應　3 一個關鍵動作\n4 情緒特寫　5 轉折　6 收尾\n每一格寫：畫面、鏡頭大小、秒數、聲音。每一格只做一件事，不要對白。'},
+g5:{cat:'規劃拍攝',act:'Screenplay Script with Cinematography Details',label:'劇本加攝影指示',text:'你是編劇兼攝影指導。照這個大綱寫一支 30 秒的直式短片劇本：【大綱】。\n每一場都寫：鏡頭怎麼動（固定、平移、手持）、角度、光線，和這一場要的情緒。只能用手機拍，地點在學校裡。'},
+g9:{cat:'規劃拍攝',act:'Music Video Designer',label:'MV 企劃',text:'你是 MV 企劃。這首歌是【歌名】，感覺是【　】。\n請給我一個 MV 概念：故事一句話、3 個主要場景、畫面的顏色，和用手機在學校裡就拍得完的拍法。'},
+g3:{cat:'剪輯與發佈',act:'Copy Script Style',label:'學風格，不抄內容',text:'你是短影音風格分析師。這是一支我想學的參考影片：【描述或逐字稿】。\n先列出它的風格：節奏、每個鏡頭多長、字幕語氣、音效。再把這個風格套到我的素材上：【我的素材】，剪成 15 秒。內容不要照抄參考影片。'},
+g6:{cat:'剪輯與發佈',act:'Color Consistency Analysis and Adjustment',label:'配色一致',text:'你是色感很好的設計師兼攝影師。我的影片主色是【　】，輔色是【　】，主題是【　】。\n請給我一組 5 個顏色的配色，說明每個顏色用在哪裡（字幕、封面、強調），並確認在手機深色模式下也看得清楚。'},
+g7:{cat:'剪輯與發佈',act:'Social Media Influencer',label:'發文計畫',text:'你是社群經營者。幫我把【我的作品】規劃成 3 支 IG Reels 的發文計畫。\n每一支寫：開頭第一句、字幕、封面文字、發文時間、5 個 hashtag。語氣要像真人，不要像廣告。'},
+g8:{cat:'讓提示詞更好',act:'Prompt Enhancer',label:'提示詞改寫器',text:'你是提示詞改寫器。我會給你一句很短的要求，請把它改寫成完整的提示詞：補上目標、給誰看、參考、格式和限制，再告訴我你補了哪些東西、為什麼。\n我的第一句：【幫我剪一支海邊的 Reels】'}
+};
 const PROMPTS={
 p1:{label:'實驗一 · 什麼都不給',when:'0:35',text:'幫我設計一張「漁光島海邊咖啡店」的開幕海報。'},
 p2:{label:'第 1 招 · 先給參考，再要十個方向',when:'0:45',text:'幫我設計一張「漁光島海邊咖啡店」的開幕海報。\n我附上三張我喜歡的照片，請參考它們的顏色和感覺。\n先不要只給一張，給我 10 個方向，每個方向的字體、配色、版面都要不一樣，每個用一句話說明。'},
@@ -485,7 +496,7 @@ p5:{label:'換你 · 漁光島素材剪法',when:'2:10',text:'我有四段在台
 p7:{label:'第 6 招 · 大型簡報先試風格',when:'1:29',text:'我要做一份【　】頁的簡報，給【　】看。\n先不要做整份。先做 3 頁試風格：封面、一頁內容、一頁圖片，給我看過再展開。'},
 p6:{label:'挑好方向之後',when:'2:20',text:'我選第【　】個的開場，配第【　】個的結尾。\n幫我寫成一張剪輯表：第幾秒放哪一段、在哪裡換畫面、哪裡要加音效。每一行一個時間點。'}
 };
-const promptBox=id=>{const p=PROMPTS[id];return `<div class="prompt"><div class="pl">${esc(p.label)}</div><p>${esc(p.text)}</p><button class="copy" type="button" data-copy="${id}">${I('copy')}複製這段</button></div>`};
+const promptBox=id=>{const p=PROMPTS[id]||GHP[id];return `<div class="prompt"><div class="pl">${esc(p.label)}</div><p>${esc(p.text)}</p><button class="copy" type="button" data-copy="${id}">${I('copy')}複製這段</button></div>`};
 
 const LUTS=[
 {slug:'harbour-amber',name:'港都暗黃',en:'Harbour Amber',desc:'偏暗黃、褪色，暗部帶一點綠。最接近田柾國那支的感覺，是照報導的描述調的，不是他的原始 LUT。'},
@@ -661,7 +672,10 @@ function tips(){
 }
 function prompts(){
  return `<div class="pagehead"><h1>提示詞<span class="dot">.</span></h1><p>上課會用到的每一段話，按一下就複製。【　】裡換成你自己的。</p></div>
- <div class="pgrid">${Object.keys(PROMPTS).sort((x,y)=>toMin(PROMPTS[x].when)-toMin(PROMPTS[y].when)).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}</div>`;
+ <div class="pgrid">${Object.keys(PROMPTS).sort((x,y)=>toMin(PROMPTS[x].when)-toMin(PROMPTS[y].when)).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}</div>
+ <div class="pagehead" style="margin-top:56px"><h1>GitHub 熱門提示詞<span class="dot">.</span></h1><p>從 GitHub 上最多人收藏的提示詞庫之一 awesome-chatgpt-prompts，挑出跟影像有關的，翻成中文、改成這堂課用得到的版本。</p></div>
+ ${['看片分析','規劃拍攝','剪輯與發佈','讓提示詞更好'].map(c=>`<div class="section" style="margin-top:28px"><h2>${c}</h2><div class="pgrid">${Object.keys(GHP).filter(k=>GHP[k].cat===c).map(k=>`<div style="margin-top:18px"><div class="dmeta num">原文：${esc(GHP[k].act)}</div>${promptBox(k)}</div>`).join('')}</div></div>`).join('')}
+ <p class="src">原文出處：<a href="https://github.com/f/awesome-chatgpt-prompts" target="_blank" rel="noopener">github.com/f/awesome-chatgpt-prompts</a>（提示詞內容為 CC0 公眾領域）。這裡的中文版有改寫，【　】裡換成你自己的。</p>`;
 }
 const PAGES={home,route,tips,prompts};
 let page='home';
@@ -681,7 +695,7 @@ document.addEventListener('click',e=>{
   const cnt=t.closest('.cklist').querySelector('p.num');if(cnt)cnt.textContent=`${CHECKS.filter(c=>state.checks[c[0]]).length} / ${CHECKS.length}`;return}
  if(t.dataset.done){const id=t.dataset.done,on=!state.done[id];if(on)state.done[id]=true;else delete state.done[id];save();
   t.closest('.stop').classList.toggle('done',on);t.setAttribute('aria-pressed',on);t.lastChild.textContent=on?'完成了':'標記完成';return}
- if(t.dataset.copy){const txt=PROMPTS[t.dataset.copy].text;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('複製好了，貼給 AI 吧')).catch(()=>toast('沒辦法自動複製，請長按文字選取'));return}
+ if(t.dataset.copy){const txt=(PROMPTS[t.dataset.copy]||GHP[t.dataset.copy]).text;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('複製好了，貼給 AI 吧')).catch(()=>toast('沒辦法自動複製，請長按文字選取'));return}
  if(t.id==='startBtn'){state.start=Date.now();state.done={};save();toast('開始計時');render()}
 });
 setInterval(()=>{if(!state.start)return;if(page==='home'){render();return}
