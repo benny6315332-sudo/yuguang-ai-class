@@ -477,6 +477,14 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 
 /* 提示詞：學生可以直接複製 */
 const GHP={
+s1:{cat:'學生用得到',act:'Note-Taking assistant',label:'上課筆記整理',text:'你是上課筆記助理。下面是我今天上課的筆記或錄音逐字稿：【貼上】。\n請整理成條列筆記，標出你覺得考試或作業會用到的重點。另外分兩個清單：一個放所有數字（例如 24 幀、1/48、5600K），一個放老師舉的例子。'},
+s2:{cat:'學生用得到',act:'Explainer with Analogies',label:'用比喻解釋',text:'你是很會用比喻講解的老師。我想搞懂【快門角度／白平衡／LUT】。\n先問我一兩個問題，確認我懂多少。再用三個比喻解釋：一個小學生聽得懂、一個高中生、一個大學生。每個比喻後面說明它對應到哪個概念。'},
+s3:{cat:'學生用得到',act:'Socratic Method',label:'用提問挑戰我的想法',text:'請用蘇格拉底式提問來挑戰我的想法。我說一句，你只回一個問題，逼我把理由講清楚。不要直接給答案。\n我的第一句：【我這支片想表達的是……】'},
+s4:{cat:'學生用得到',act:'Study planner',label:'讀書和作業計畫',text:'你是學習規劃顧問。我這學期的課是【　】，每週大概有【　】小時可以用，最近的截止日是【　】。\n幫我排一份兩週的計畫，作業和拍攝都要排進去，也要留休息時間。'},
+s5:{cat:'學生用得到',act:'AI Writing Tutor',label:'作品說明寫作家教',text:'你是寫作家教。這是我的作品說明（或報告）：【貼上】。\n不要幫我重寫。請指出三個寫得好的地方、三個可以更清楚的地方，每一點都說為什麼，讓我自己改。'},
+s6:{cat:'學生用得到',act:'presentation making',label:'期末報告簡報',text:'你是簡報設計師。這是我的期末報告內容：【貼上】。\n先不要做整份。先列出 12 頁的大綱（第一頁是題目和姓名，最後一頁是謝謝），再只做 3 頁試風格給我看：封面、一頁內容、一頁圖片。'},
+s7:{cat:'學生用得到',act:'Act as a Resume Reviewer',label:'履歷和作品集健檢',text:'你是影像相關產業的招募主管。這是我想應徵的職缺：【職缺說明】，這是我的履歷和作品集連結：【貼上】。\n請告訴我哪些經歷和作品最符合、哪裡要補強，以及面試官可能會問什麼。'},
+s8:{cat:'學生用得到',act:'Interview Preparation Coach',label:'面試模擬',text:'你是面試教練。我要應徵【職位或科系】。\n請模擬面試，一次只問一題，等我回答完，先給我回饋，再問下一題。總共 5 題，最後整理我最需要加強的地方。'},
 g1:{cat:'看片分析',act:'Film Critic',label:'影評人',text:'你現在是一位影評人。我會貼上一支影片的描述、逐字稿或截圖：【　】。\n請從畫面、鏡頭、剪接節奏、顏色、音樂五個方面評論，每一項各說一個優點、一個缺點。最後用一句話說它想讓人感受到什麼。'},
 g2:{cat:'看片分析',act:'Viral Video Analyzer',label:'爆紅短片分析',text:'你是專門分析 IG Reels 和 TikTok 爆紅影片的分析師。我會給你一支影片的描述和數字（觀看、按讚、留言）：【　】。\n請分析：前 3 秒怎麼抓住人、整支的節奏、字幕和封面、配樂、大家為什麼會分享。最後給我三個可以直接用在我下一支片的建議。'},
 g4:{cat:'規劃拍攝',act:'6-Panel Storyboard Mastery',label:'六格分鏡',text:'你是分鏡師。幫我把【主題】規劃成 6 格分鏡：\n1 遠景，交代地點　2 中景，人物反應　3 一個關鍵動作\n4 情緒特寫　5 轉折　6 收尾\n每一格寫：畫面、鏡頭大小、秒數、聲音。每一格只做一件事，不要對白。'},
@@ -673,8 +681,8 @@ function tips(){
 function prompts(){
  return `<div class="pagehead"><h1>提示詞<span class="dot">.</span></h1><p>上課會用到的每一段話，按一下就複製。【　】裡換成你自己的。</p></div>
  <div class="pgrid">${Object.keys(PROMPTS).sort((x,y)=>toMin(PROMPTS[x].when)-toMin(PROMPTS[y].when)).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}</div>
- <div class="pagehead" style="margin-top:56px"><h1>GitHub 熱門提示詞<span class="dot">.</span></h1><p>從 GitHub 上最多人收藏的提示詞庫之一 awesome-chatgpt-prompts，挑出跟影像有關的，翻成中文、改成這堂課用得到的版本。</p></div>
- ${['看片分析','規劃拍攝','剪輯與發佈','讓提示詞更好'].map(c=>`<div class="section" style="margin-top:28px"><h2>${c}</h2><div class="pgrid">${Object.keys(GHP).filter(k=>GHP[k].cat===c).map(k=>`<div style="margin-top:18px"><div class="dmeta num">原文：${esc(GHP[k].act)}</div>${promptBox(k)}</div>`).join('')}</div></div>`).join('')}
+ <div class="pagehead" style="margin-top:56px"><h1>GitHub 熱門提示詞<span class="dot">.</span></h1><p>從 GitHub 上最多人收藏的提示詞庫之一 awesome-chatgpt-prompts，挑出學生平常用得到的和跟影像有關的，翻成中文、改成這堂課用得到的版本。</p></div>
+ ${['學生用得到','看片分析','規劃拍攝','剪輯與發佈','讓提示詞更好'].map(c=>`<div class="section" style="margin-top:28px"><h2>${c}</h2><div class="pgrid">${Object.keys(GHP).filter(k=>GHP[k].cat===c).map(k=>`<div style="margin-top:18px"><div class="dmeta num">原文：${esc(GHP[k].act)}</div>${promptBox(k)}</div>`).join('')}</div></div>`).join('')}
  <p class="src">原文出處：<a href="https://github.com/f/awesome-chatgpt-prompts" target="_blank" rel="noopener">github.com/f/awesome-chatgpt-prompts</a>（提示詞內容為 CC0 公眾領域）。這裡的中文版有改寫，【　】裡換成你自己的。</p>`;
 }
 const PAGES={home,route,tips,prompts};
