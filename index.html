@@ -360,10 +360,7 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .lutrow h3{font-size:16px;line-height:1.4}.lutrow h3 .num{font-size:11px;color:var(--muted);font-weight:500;margin-left:4px}
 .lutrow p{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.7}
 .lutrow .copy{margin-top:8px;text-decoration:none}
-.refthumb{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:10px;background:var(--ink);align-content:center}
-.refthumb i{display:block;aspect-ratio:1;background:#5c645e}.refthumb i.o{background:var(--rust-soft)}
-.refthumb b{grid-column:1/-1;text-align:center;color:var(--rice);font:500 11px var(--mono);letter-spacing:.12em}
-.cue table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5}
+.refthumb i{display:block;aspect-ratio:1;background:#5c645e}.cue table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5}
 .cue th{text-align:left;font-size:11px;font-weight:700;color:var(--muted);padding:6px 8px 6px 0;border-bottom:1px solid var(--ink)}
 .cue td{vertical-align:top;padding:8px 8px 8px 0;border-bottom:1px solid var(--line)}
 .cue td:first-child{white-space:nowrap;color:var(--rust);width:1%}
@@ -438,16 +435,8 @@ button:active,a.copy:active{transform:translateY(1px)}
 .term p{margin:6px 0 0;font-size:15px;line-height:1.8;color:#3f4741}
 .term .tex{font-size:14px;color:var(--ink);background:var(--rust-tint);padding:6px 10px;margin-top:8px}
 @media(min-width:1024px){.tgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:48px}.tfind{max-width:520px}}
-.refthumb .planet{grid-column:1/-1;justify-self:center;position:relative;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#5c645e 0 34%,#c9d3cf 35% 100%)}
-.refthumb .planet:before{content:"";position:absolute;left:50%;top:6px;width:3px;height:18px;margin-left:-1.5px;background:var(--rust-soft)}
-.refthumb .planet em{position:absolute;inset:-6px;border:1px dashed rgba(244,243,238,.5);border-radius:50%}
-.refthumb .rg{grid-column:1/-1;justify-self:center;position:relative;width:52px;height:52px}
-.rg-flip:before,.rg-flip:after{content:"";position:absolute;left:14px;top:4px;width:24px;height:42px;border:2px solid #c9d3cf;border-radius:4px}
-.rg-flip:after{border-color:var(--rust-soft);transform:rotate(28deg)}
-.rg-magic:before{content:"";position:absolute;inset:6px;border:2px dashed #c9d3cf}
-.rg-magic:after{content:"";position:absolute;left:21px;top:21px;width:10px;height:10px;background:var(--rust-soft);transform:rotate(45deg);box-shadow:0 0 0 4px rgba(227,154,113,.25)}
-.rg-scenic{background:linear-gradient(to bottom,#c9d3cf 0 48%,var(--rust-soft) 48% 54%,#5c645e 54% 100%)}
-.rg-scenic:after{content:"";position:absolute;left:30px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--rust-soft)}
+.refthumb{display:grid;place-items:center;background:var(--tile)}
+.refthumb svg{width:40px;height:40px;display:block}
 </style>
 </head>
 <body data-phase="pre">
@@ -548,6 +537,7 @@ const clipSection=()=>`<div class="section" id="clips"><h2>素材下載</h2>
   <p class="help" style="margin-top:12px">3 月 25 日傍晚在漁光島拍的四顆，轉成 1080p、30fps 的輕量版，含原本的環境音。只能用在這堂課的作業。</p>
   <div class="lutrows">${CLIPS.map(c=>`<div class="lutrow"><img src="clips/${c.f}.jpg" alt="${c.name}" loading="lazy" style="object-fit:cover"><div><h3>${c.name}</h3><p class="num">${c.meta}</p><p>老師用在：${c.use}</p><a class="copy" href="clips/${c.f}.mp4" download="漁光島_${c.f}.mp4">${I('down')}下載 .mp4</a></div></div>`).join('')}</div>
  </div>`;
+const REFICON={"grid": "<g fill=\"#202521\"><rect x=\"0\" y=\"0\" width=\"4\" height=\"4\"/><rect x=\"6\" y=\"0\" width=\"4\" height=\"4\"/><rect x=\"0\" y=\"6\" width=\"4\" height=\"4\"/><rect x=\"6\" y=\"6\" width=\"4\" height=\"4\"/><rect x=\"12\" y=\"6\" width=\"4\" height=\"4\"/><rect x=\"0\" y=\"12\" width=\"4\" height=\"4\"/><rect x=\"6\" y=\"12\" width=\"4\" height=\"4\"/><rect x=\"12\" y=\"12\" width=\"4\" height=\"4\"/></g><rect x=\"12\" y=\"0\" width=\"4\" height=\"4\" fill=\"#9a5531\"/>", "planet": "<path fill=\"#202521\" d=\"M8 6a5 5 0 1 1 0 10A5 5 0 0 1 8 6Zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z\" fill-rule=\"evenodd\"/><rect x=\"7\" y=\"0\" width=\"2\" height=\"5\" fill=\"#9a5531\"/>", "flip": "<rect x=\"1\" y=\"2\" width=\"7\" height=\"13\" rx=\"1.5\" fill=\"#202521\"/><rect x=\"9\" y=\"1\" width=\"7\" height=\"13\" rx=\"1.5\" fill=\"#9a5531\" transform=\"rotate(18 12.5 7.5)\"/>", "magic": "<path fill=\"#202521\" d=\"M0 3h11v11H0Zm3 3v5h5V6Z\" fill-rule=\"evenodd\"/><rect x=\"10\" y=\"0\" width=\"6\" height=\"6\" fill=\"#9a5531\"/>", "scenic": "<path fill=\"#9a5531\" d=\"M3.5 9A4.5 4.5 0 0 1 12.5 9Z\"/><path fill=\"#202521\" d=\"M0 10h16v2H0Zm2 4h5v2H2Zm7 0h5v2H9Z\"/>"};
 const REFS=[
 {h:'@yuyenwng',url:'https://www.instagram.com/yuyenwng/',name:'格子裡各放各的',desc:'畫面切成格子，每一格錯開時間換鏡頭；鳥、風、腳步、喀嚓聲疊好幾層。老師的漁光島範例影片就是學這個剪法。',g:'grid'},
 {h:'@potato0x_x',url:'https://www.instagram.com/potato0x_x/',name:'畫面上再加一層',desc:'東京的 Reels 創作者。實拍畫面上疊手繪、像素風的圖案和很少的字，也會用小行星這種特殊視角，讓普通的散步、旅行畫面變得好玩。',g:'planet'},
@@ -699,7 +689,7 @@ function home(){
  </div>
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
-  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true">${r.g==='grid'?'<i></i><i></i><i></i><i></i><i class="o"></i><i></i><i></i><i></i><i></i>':r.g==='planet'?'<span class="planet"><em></em></span>':`<span class="rg rg-${r.g}"></span>`}</div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
+  ${REFS.map(r=>`<div class="hourrow" style="cursor:auto"><div class="thumb refthumb" aria-hidden="true"><svg viewBox="0 0 16 16">${REFICON[r.g]||''}</svg></div><div><div class="dmeta">${r.h} · 剪法參考</div><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p><p style="margin-top:6px"><a href="${r.url}" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看他的作品</a></p></div><span></span></div>`).join('')}
  </div>
  <div class="section"><h2>再往下一層</h2>
   <button class="hourrow" type="button" data-go="terms" style="grid-template-columns:1fr 18px"><div><h3 style="font-size:16px">AI 名詞：RAG、LoRA、模式崩塌、MCP……</h3><p>${TERMS.length} 個進階名詞：AI 為什麼這樣回你、怎麼讓它照你要的做。</p></div>${I('right')}</button>
