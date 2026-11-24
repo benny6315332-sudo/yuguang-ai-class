@@ -292,6 +292,11 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .blk button[aria-selected=true] i,.blk button[aria-selected=true] .bt span{color:var(--rust-soft)}
 @media(hover:hover){.blk button:not([aria-selected=true]):hover{background:var(--tile)}}
 @media(max-width:520px){.blk button{flex-direction:column;align-items:flex-start;gap:4px}.blk i{font-size:20px}}
+.jkthumb{position:relative;display:grid;place-items:center;background:linear-gradient(to bottom,#aaa598 0%,#9e7f62 46%,#363931 82%,#353833 100%);overflow:hidden}
+.jkthumb:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.05) 0 1px,transparent 1px 3px);pointer-events:none}
+.jkthumb svg{width:26px;height:26px;fill:#f4f3ee;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
+.jkthumb .rec{position:absolute;left:7px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--rust-soft)}
+.jkthumb .tc{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11px;color:#f4f3ee;letter-spacing:.02em}
 .brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
 .trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
@@ -467,7 +472,7 @@ function home(){
   <div class="btnrow" style="display:flex"><button class="btn dark" type="button" id="startBtn">${state.start?'重新計時':'開始上課'}</button><button class="btn ghost" type="button" data-go="route">課表</button></div>
  </div>
  <div class="section"><h2>上課前先看</h2>
-  <div class="hourrow" style="cursor:auto"><div class="thumb" style="display:grid;place-items:center;background:var(--ink);color:var(--rice);font:500 13px var(--mono)">2′22″</div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
+  <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
  </div>
  <div class="section"><h2>三小時</h2>
   ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
