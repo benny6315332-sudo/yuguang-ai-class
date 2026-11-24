@@ -297,6 +297,37 @@ button.inner:active{opacity:.72;transform:scale(.98)}
 .jkthumb svg{width:26px;height:26px;fill:#f4f3ee;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
 .jkthumb .rec{position:absolute;left:7px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--rust-soft)}
 .jkthumb .tc{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11px;color:#f4f3ee;letter-spacing:.02em}
+/* ---- 電腦版 ---- */
+@media(min-width:1024px){
+ header .wrap,main.wrap,footer .wrap{max-width:1180px}
+ main.wrap{padding:0 40px}
+ header .wrap{padding:0 40px}
+ .head .when{display:inline;margin-left:16px}
+ #page-home .trip-cover{margin:-24px -40px 0;min-height:560px;padding:0 40px 48px}
+ #page-home .trip-cover h1{font-size:72px}
+ #page-home .trip-cover .sub{font-size:17px}
+ .cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;margin-top:40px;align-items:start}
+ .c-side{position:sticky;top:calc(var(--header) + 24px)}
+ .c-side .lead{padding-top:0}
+ .c-main>.section:first-child{margin-top:0}
+ .rlayout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:56px;align-items:start}
+ .r-side{position:sticky;top:calc(var(--header) + 24px)}
+ .r-side .tabs{position:static;margin:0;padding:0;border:0;background:none}
+ .r-side .blk{grid-template-columns:1fr;gap:6px}
+ .r-side .blk button{min-height:68px}
+ .r-side .dayhero{margin:16px 0 0;height:200px}
+ .r-side .dayhero-txt{left:16px;right:16px}
+ .r-side .dayhero-txt h2{font-size:20px}
+ .r-main .timeline{margin-top:0}
+ .stop{grid-template-columns:84px 1fr}
+ .stop .vid{max-width:260px}
+ .stop .media img{max-width:640px}
+ .pair{max-width:720px}
+ .tipgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:48px}
+ .pgrid{display:grid;grid-template-columns:1fr 1fr;column-gap:32px;align-items:start}
+ .pagehead h1{font-size:44px}
+ .pagehead{max-width:720px}
+}
 .brandtxt{font-weight:900;font-size:16px;letter-spacing:.02em;white-space:nowrap}
 .trip-cover{background-image:url("img/cover.jpg");background-position:50% 60%}
 .trip-cover h1{line-height:1.12;font-size:clamp(34px,9vw,60px);font-weight:900;letter-spacing:.01em}
@@ -464,7 +495,7 @@ function home(){
   <p class="sub">用老師的海邊片，學十個跟 AI 合作的方法<span class="dot">.</span></p>
   <button type="button" data-go="route">${I('right')}看今天的課表</button>
  </div></div>
- <div class="lead">
+ <div class="cols"><aside class="c-side"><div class="lead">
   ${e==null?`<div class="state">還沒開始上課</div><h2>三小時，<span class="num">3</span> 段</h2><p>老師按下開始後，這裡會顯示現在進行到哪裡。</p>`
   :`<div class="state">已經上了</div><h2><span class="clock">${fmt(Math.min(e,999))}</span></h2><p>${n?`現在：${esc(n.name)}`:(e>=180?'課程結束':'—')}</p>`}
   <div class="meter"><i style="width:${Math.round(doneN/total*100)}%"></i></div>
@@ -474,7 +505,7 @@ function home(){
  <div class="section"><h2>上課前先看</h2>
   <div class="hourrow" style="cursor:auto"><div class="thumb jkthumb" aria-hidden="true"><span class="rec"></span><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5Z"/></svg><span class="tc num">02:22</span></div><div><div class="dmeta">田柾國 · 2026.11.21 · Blackmagic Camera</div><h3>《在高雄的自由時間》</h3><p>輕軌、巷子招牌、電風扇、腳踏車、旗津的海。偏暗黃，配〈碧海藍天〉。</p><p style="margin-top:6px"><a href="https://www.instagram.com/mnijungkook/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">到 IG 看原片</a>　<button type="button" data-hour="0" style="background:none;border:0;padding:0;font-weight:700;text-decoration:underline;text-underline-offset:3px">課表第一段</button></p></div><span></span></div>
  </div>
- <div class="section"><h2>三小時</h2>
+ </aside><div class="c-main"><div class="section"><h2>三小時</h2>
   ${HOURS.map((h,i)=>`<button class="hourrow" type="button" data-hour="${i}"><img class="thumb" src="${h.img}" alt="" loading="lazy"><div><div class="dmeta num">${h.range}</div><h3>${esc(h.n)}：${esc(h.name)}</h3><p>${esc(h.desc)}</p></div>${I('right')}</button>`).join('')}
  </div>
  <div class="section"><h2>今天的十招</h2>
@@ -482,17 +513,17 @@ function home(){
  </div>
  <div class="section"><h2>今天要帶</h2>
   <div class="detail" style="cursor:auto">手機（裝好 ChatGPT、Claude 或 Gemini 其中一個）、手機裡三張你喜歡的照片、一個剪輯 App（CapCut、剪映都可以）。</div>
- </div>`;
+ </div></div></div>`;
 }
 let curHour=0;
 function route(){
  const h=HOURS[curHour],n=nowStop();
- return `<div class="tabs" style="display:block"><div class="blk" role="tablist" aria-label="三小時">
+ return `<div class="rlayout"><aside class="r-side"><div class="tabs" style="display:block"><div class="blk" role="tablist" aria-label="三小時">
   ${HOURS.map((x,i)=>`<button type="button" role="tab" aria-selected="${i===curHour}" data-hour="${i}"><i>${['一','二','三'][i]}</i><span class="bt"><b>${x.n}</b><span class="num">${x.range}</span></span></button>`).join('')}
  </div></div>
  <div class="dayhero" style="margin-top:24px"><img class="dayhero-img" src="${h.img}" alt=""><div class="dayhero-txt"><div class="dmeta num">${h.range}</div><h2>${esc(h.name)}</h2></div></div>
- <p class="daydesc">${esc(h.desc)}</p>
- <ol class="timeline">
+ <p class="daydesc">${esc(h.desc)}</p></aside>
+ <div class="r-main"><ol class="timeline">
  ${STOPS[h.id].map(s=>{const t=span(s.time),done=state.done[s.id],now=n&&n.id===s.id;return `<li class="stop${done?' done':''}${now?' now':''}">
   <div class="stime"><b class="num">${s.time.split(' – ')[0]}</b><span class="num">${s.time.includes('–')?'– '+s.time.split(' – ')[1]:''}</span></div>
   <div class="sbody">${now?'<span class="tag now">現在</span><br>':''}<h3>${kTag[s.k]||''}${esc(s.name)}</h3>
@@ -501,15 +532,15 @@ function route(){
    ${s.alert?`<div class="alert">${I('warn')}<span>${esc(s.alert)}</span></div>`:''}
    <button class="chk" type="button" data-done="${s.id}" aria-pressed="${!!done}">${I('check')}${done?'完成了':'標記完成'}</button>
   </div></li>`}).join('')}
- </ol>`;
+ </ol></div></div>`;
 }
 function tips(){
  return `<div class="pagehead"><h1>十招<span class="dot">.</span></h1><p>每一招怎麼做、我們這門課真的怎麼做，按下面的按鈕跳到課表裡講它的那一段。</p></div>
- ${TIPS.map((t,i)=>`<div class="tip"><span class="num">${String(i+1).padStart(2,'0')}</span><div><h3>${esc(t[0])}</h3><dl><dt>怎麼做</dt><dd>${esc(t[1])}</dd><dt>我們這次</dt><dd class="us">${esc(t[2])}</dd></dl>${(()=>{const st=allStops().find(x=>x.id===t[3]);return st?`<button class="copy" type="button" data-jump="${t[3]}">${I('right')}課表 ${st.time.split(' – ')[0]}</button>`:''})()}</div></div>`).join('')}`;
+ <div class="tipgrid">${TIPS.map((t,i)=>`<div class="tip"><span class="num">${String(i+1).padStart(2,'0')}</span><div><h3>${esc(t[0])}</h3><dl><dt>怎麼做</dt><dd>${esc(t[1])}</dd><dt>我們這次</dt><dd class="us">${esc(t[2])}</dd></dl>${(()=>{const st=allStops().find(x=>x.id===t[3]);return st?`<button class="copy" type="button" data-jump="${t[3]}">${I('right')}課表 ${st.time.split(' – ')[0]}</button>`:''})()}</div></div>`).join('')}</div>`;
 }
 function prompts(){
  return `<div class="pagehead"><h1>提示詞<span class="dot">.</span></h1><p>上課會用到的每一段話，按一下就複製。【　】裡換成你自己的。</p></div>
- ${Object.keys(PROMPTS).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}`;
+ <div class="pgrid">${Object.keys(PROMPTS).sort((x,y)=>toMin(PROMPTS[x].when)-toMin(PROMPTS[y].when)).map(id=>`<div style="margin-top:22px"><div class="dmeta num">${PROMPTS[id].when}</div>${promptBox(id)}</div>`).join('')}</div>`;
 }
 const PAGES={home,route,tips,prompts};
 let page='home';
